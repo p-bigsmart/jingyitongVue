@@ -9,16 +9,9 @@ export default {
   name: 'app'
 }
 </script>
-
-<style>
-*{
-  margin:0;
-  padding:0;
-}
+<style lang="less">
+@import '../src/css/reset.less';
 #app{
   height:100%;
-}
-a{ 
-  text-decoration: none;
 }
 </style>

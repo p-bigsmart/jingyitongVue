@@ -7,7 +7,7 @@
      <router-view></router-view>
      <div class="content">
         
-       <swiper auto  style="width:100%;margin:10px 0 0 10px" height="200px" dots-class="custom-bottom" dots-position="center">
+       <swiper auto  style="width:100%;margin-top:10px" height="200px" dots-class="custom-bottom" dots-position="center">
         <swiper-item><div id="myChart" :style="{width: '100%', height: '200px'}"></div></swiper-item>
         <swiper-item><div id="myChart2" :style="{width: '100%', height: '200px'}"></div></swiper-item>
        </swiper>
@@ -40,39 +40,19 @@
         <img slot="icon" src="../assets/123.png">
       </grid-item>
       </grid>
-     
+     <common-footer></common-footer>
      </div>
-    <tabbar  style="width:100%;position:absolute;left:0;bottom:0;z-index:100;">
-      <tabbar-item>
-        
-       <i class="iconfont icon-biaoqian" slot="icon"></i>
-        <span slot="label">办事项目</span>
-      </tabbar-item>
-      <tabbar-item show-dot>
-       <i class="iconfont icon-tixing" slot="icon"></i>
-        <span slot="label">公司公告</span>
-      </tabbar-item>
-      <tabbar-item selected link="">
-       <i class="iconfont icon-shouye" slot="icon"></i>
-        <span slot="label">首页</span>
-      </tabbar-item>
-      <tabbar-item badge="2">
-       <i class="iconfont icon-jiankong" slot="icon"></i>
-        <span slot="label">租控图</span>
-      </tabbar-item>
-      <tabbar-item badge="2">
-       <i class="iconfont icon-VPN" slot="icon"></i>
-        <span slot="label">切换楼盘</span>
-      </tabbar-item>
-    </tabbar>
+    
    </view-box>
  </div>
 </template>
 
 
 <script>
-import { Swiper,SwiperItem,ViewBox,XHeader, Tabbar, TabbarItem, CellFormPreview, Group, Cell,Grid,GridItem } from 'vux'
+
+import {Swiper, SwiperItem, ViewBox, XHeader, CellFormPreview, Group, Cell, Grid, GridItem } from 'vux'
 import axios from 'axios'
+import commonFooter from 'src/common/footer'
 
 export default {
   components: {
@@ -80,13 +60,12 @@ export default {
     Group,
     Cell,
     XHeader,
-    Tabbar,
-    TabbarItem,
     ViewBox,
     Swiper,
     SwiperItem,
     Grid,
-    GridItem
+    GridItem,
+    commonFooter
   },
   data () {
     return {
@@ -154,12 +133,5 @@ export default {
   width:100%;
   height:100%;
 }
- html, body {
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-  }
-.content{
-  padding-top:46px;
-}
+
 </style>

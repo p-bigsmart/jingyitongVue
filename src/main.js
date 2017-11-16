@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import Vuex from 'vuex';
 import Echarts from 'echarts'
+
 Vue.config.productionTip = false
 Vue.use(Vuex);
 Vue.prototype.$echarts = Echarts
