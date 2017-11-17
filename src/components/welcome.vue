@@ -34,7 +34,7 @@ export default {
 <style scoped>
  
  .welcomBg{
-    background:url("../img/welcomeBanner.jpg") no-repeat;
+    background:url("../assets/welcomeBanner.jpg") no-repeat;
     background-size: cover;
     height:100%;
     position: relative;

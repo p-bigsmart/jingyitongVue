@@ -1,7 +1,7 @@
 <template>
   <div class="height100">
       <view-box ref="viewBox">
-          <x-header :left-options="{showBack: false}" style="width:100%;position:absolute;left:0;top:0;z-index:100;">
+          <x-header :left-options="{showBack: false}">
                   <a slot="left">退出</a>
                     精易通物管助手
                   <a slot="right">进驻登记</a>
@@ -68,7 +68,7 @@ export default {
 }
 
 .bgImg{
-        background: url('../img/loginBanner.png') no-repeat;
+        background: url('../assets/loginBanner.png') no-repeat;
         background-size: cover;
         width:100%;
         height:200px

@@ -1,43 +1,56 @@
 <template>
 
-   <div style="height:100%;">
+   <div class="height100">
      <link rel="stylesheet" href="http://at.alicdn.com/t/font_475813_9og1rj53a2az6w29.css">
    <view-box ref="viewBox">
-     <x-header  style="width:100%;position:absolute;left:0;top:0;z-index:100;">精易通物管助手</x-header>
-     <router-view></router-view>
+
+     <x-header >
+       精易通物管助手
+       <span slot="right">注销登陆</span>
+     </x-header> 
+
      <div class="content">
-        
+       <search
+    @result-click="resultClick"
+    @on-change="getResult"
+    :results="results"
+    v-model="value"
+    auto-scroll-to-top top="46px"
+    @on-focus="onFocus"
+    @on-cancel="onCancel"
+    @on-submit="onSubmit"
+    ref="search"></search>
        <swiper auto  style="width:100%;margin-top:10px" height="200px" dots-class="custom-bottom" dots-position="center">
         <swiper-item><div id="myChart" :style="{width: '100%', height: '200px'}"></div></swiper-item>
         <swiper-item><div id="myChart2" :style="{width: '100%', height: '200px'}"></div></swiper-item>
        </swiper>
       <grid  :cols="3">
       <grid-item label="合同审批">
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/shengpi.png">
       </grid-item>
       <grid-item label='报修'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/baoxiu.png">
       </grid-item>
       <grid-item label='投诉'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/tousu.png">
       </grid-item>
       <grid-item label='车牌查询'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/chaxun.png">
       </grid-item>
       <grid-item label='设备巡检'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/jiancha.png">
       </grid-item>
-      <grid-item label='扫码超表'>
-        <img slot="icon" src="../assets/123.png">
+      <grid-item label='扫码抄表'>
+        <img slot="icon" src="../assets/saoma.png">
       </grid-item>
       <grid-item label='计费查询'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/jifei.png">
       </grid-item>
       <grid-item label='欠费查询'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/qianfei.png">
       </grid-item>
       <grid-item label='现场缴费'>
-        <img slot="icon" src="../assets/123.png">
+        <img slot="icon" src="../assets/jiaofei.png">
       </grid-item>
       </grid>
      <common-footer></common-footer>
@@ -50,7 +63,7 @@
 
 <script>
 
-import {Swiper, SwiperItem, ViewBox, XHeader, CellFormPreview, Group, Cell, Grid, GridItem } from 'vux'
+import {Search, XButton, Swiper, SwiperItem, ViewBox, XHeader, CellFormPreview, Group, Cell, Grid, GridItem } from 'vux'
 import axios from 'axios'
 import commonFooter from 'src/common/footer'
 
@@ -65,7 +78,9 @@ export default {
     SwiperItem,
     Grid,
     GridItem,
-    commonFooter
+    commonFooter,
+    Search,
+    XButton
   },
   data () {
     return {
@@ -80,7 +95,9 @@ export default {
         value: '8.00'
       }],
       chartArr1 : [1,2,3,4,5,6,7],
-      chartData2 :[30,75,84,24,68,60,10]
+      chartData2 :[30,75,84,24,68,60,10],
+      results:[],
+      value: ''
     }
   },
   mounted(){
@@ -95,7 +112,11 @@ export default {
         myChart.setOption({
             title: { 
               text: title,
-              subtext: subtext+subNumber
+              left:"center",
+              subtext: subtext+subNumber,
+              subtextStyle:{
+                verticalAlign:"top"
+              }
             },
             tooltip: {trigger: 'none',
             axisPointer: {
@@ -113,18 +134,51 @@ export default {
         });
 },
     drawLine(){
-        this.charts('myChart','superpeng','今日收缴率：',5000,'cross',this.chartArr1,'收缴率','line',this.chartData2)
+        this.charts('myChart','永利达收缴率','今日收款','7854元','cross',this.chartArr1,'收缴率','line',this.chartData2)
     },
     aaa(){
-        this.charts('myChart2','永利达','今日收缴率：',7854,'cross',this.chartArr1,'收缴率','bar',this.chartData2)
+        this.charts('myChart2','永利达出租率','今日签订合同',5,'cross',this.chartArr1,'收缴率','bar',this.chartData2)
+    },
+    resultClick (item) {
+      alert('you click the result item: ' + JSON.stringify(item))
+      document.getElementsByClassName('vux-slider')[0].style.marginTop = '10px'
+    },
+    getResult (val) {
+      console.log('on-change', val)
+      this.results = val ? getResult(this.value) : []
+    },
+    onSubmit () {
+      this.$refs.search.setBlur()
+      
+    },
+    onFocus () {
+      console.log('on focus')
+      document.getElementsByClassName('vux-slider')[0].style.marginTop = '54px'
+    },
+    onCancel () {
+      console.log('on cancel')
+      document.getElementsByClassName('vux-slider')[0].style.marginTop = '10px'
     }
   }
 }
 
+function getResult (val) {
+  let rs = []
+  for (let i = 0; i < 10; i++) {
+    rs.push({
+      title: `${val} result: ${i + 1} `,
+      other: 'bb'
+    })
+  }
+  return rs
+}
 
 </script>
 
-<style >
+<style lang="less">
+
+@import '../css/reset.less';
+
 .popup0 {
   padding-bottom:15px;
   height:200px;
