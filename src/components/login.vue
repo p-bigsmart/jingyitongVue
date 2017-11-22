@@ -4,7 +4,7 @@
           <x-header :left-options="{showBack: false}">
                   <a slot="left">退出</a>
                     精易通物管助手
-                  <a slot="right">进驻登记</a>
+                  <a slot="right" @click="goStationed">进驻登记</a>
           </x-header>
             <div class="content">
                    <div class="bgImg"></div>
@@ -12,11 +12,15 @@
                         <div class="logincontent">
                             <p>请输入你的账号和密码</p>
                             <div class="login-input">
-                                <input type="text" v-model="name" placeholder="请输入用户名" />
-                                <input type="password" v-model="pass" placeholder="请输入密码" />
+                                <div>
+                                <input  type="text" v-model="name" placeholder="请输入用户名" />
+                                </div>
+                                <div>
+                                    <input type="password" v-model="pass" placeholder="请输入密码" />
+                                </div>
                             </div>
                             <button class="submit" @click="submit()">登录</button>
-                            <p style="margin-top:0;"><a href="">忘记密码</a> | <a href="">立即注册</a></p>
+                            <p style="margin-top:0;"><a href="">忘记密码</a> | <a @click="goStationed">进驻登记</a></p>
                         </div>
                     </div>
                     <footer>
@@ -28,13 +32,13 @@
 </template>
 
 <script>
-import {ViewBox,XHeader,} from 'vux'
+import {ViewBox,XHeader, AlertModule} from 'vux'
 
 export default {
     components:{
         ViewBox,
         XHeader,
-
+        AlertModule
     },
     data(){
         return{
@@ -47,13 +51,32 @@ export default {
         
     },
     methods: {
-     submit(){
-         if(this.name == 1 && this.pass == 1){
+    submit(){
+        if(this.name.length == 0){
+             AlertModule.show({
+                title: '用户名错误',
+                content: '请输入用户名！'
+                // ,onShow () {
+                // console.log('Module: I\'m showing')
+                // },
+                // onHide () {
+                // console.log('Module: I\'m hiding now')
+                // }
+            })
+        }else
+        if(this.pass.length == 0 || this.pass.length < 6 || this.pass.length > 18){
+             AlertModule.show({
+                title: '密码错误',
+                content: '请输入6-18位密码！'
+            })
+        }else{
+            // axios.post('')
              this.$router.push('./index')
-         }else{
-             console.log('密码错误')
-         }
         }
+    },
+    goStationed(){
+        this.$router.push('./stationed')
+    }
     }
 
 }
@@ -92,6 +115,9 @@ export default {
 	font-size:16px;
 	margin:20px 0 30px 0;
 }
+.logincontent .login-input > div{
+    margin-top:10px;
+}
 .logincontent .login-input input{ 
 	height:40px;
 	width:75%;
@@ -99,7 +125,8 @@ export default {
 	padding-left:40px;
 	background: url(../assets/userBg.png) no-repeat;
 	background-position:8px 10px ; 
-	outline: none;
+    outline: none;
+    font-size: 100%;
 }
 .logincontent .login-input input+input{
 	margin-top:15px;
@@ -109,13 +136,14 @@ export default {
 .logincontent button{
 	height:40px;
 	width:90%;
-	margin-top:10px;
+	margin-top:0px;
 	background: #3c97e6;
 	border:none;
 	border-radius: 5px;
 	color:white;
 	letter-spacing: 5px;;
-	outline: none;
+    outline: none;    
+    font-size: 100%;
 }
 .logincontent p a{
 	font-size:14px;

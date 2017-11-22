@@ -1,7 +1,7 @@
 <template>
   <div class="height100 ">
       <div class="welcomBg">
-          <span  class="dataTime">{{dataTime}} 退出</span>
+          <span  class="dataTime" @click="tiaoguo">{{dataTime}} 跳过</span>
       </div>
   </div>
 </template>
@@ -20,13 +20,18 @@ export default {
       }
   },
   created(){
-    var interval = setInterval(()=>{
+    let interval = setInterval(()=>{
         this.dataTime--;
         if(this.dataTime == 0){
             this.$router.push('./login')
             clearInterval(interval)
         }
     },1000);
+  },
+  methods:{
+      tiaoguo(){
+          this.$router.push('./login')
+      }
   }
 }
 </script>
