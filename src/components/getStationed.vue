@@ -51,8 +51,7 @@
 <script>
 
 import {XButton, XHeader, XInput, Group, ViewBox, XTextarea, AlertModule} from 'vux'
-import axios from 'axios'
-
+import {getData, postData} from 'src/util/base.js'
 export default {
   components:{
     XButton,
@@ -62,7 +61,8 @@ export default {
     ViewBox,
     XTextarea,
     AlertModule,
-    axios
+    getData,
+    postData
   },
   data(){
       return{
@@ -87,7 +87,8 @@ export default {
         //   验证码是否不能点击
           disabledCode:false,
           wait:60,
-          getCodeText:'获取验证码'
+          getCodeText:'获取验证码',
+          ramdom:0
       }
   },
   methods:{
@@ -108,13 +109,42 @@ export default {
               })
               return false;
               }
-              axios.post("http://192.168.1.108/public/garrison",{
+              console.log("申请进驻"+this.ramdom)
+              postData("/public/garrison",{
                   companyName:this.companyName,
                   companyAbbreviation:this.companyNameMini,
                   companyAddress:this.companyAddress,
-                  contactName:this.contactName,
-                  contactMobile:this.contactPhone
-                //   这里还差下面的额描述
+                  contractName:this.contactName,
+                  contractMobile:this.contactPhone.replace(/\s+/g,""),
+                  remark:this.XTextareaValue,
+                  code:this.code,
+                  random:this.ramdom
+              }).then( res => {
+                      console.log(res)
+                  if(res.data == 0){
+                    AlertModule.show({
+                        title:"网络故障",
+                        content:"请手动刷新页面！"
+                    })
+                  }else if(res.data == 1){
+                      AlertModule.show({
+                        title:"提交成功！",
+                        content:"请等待管理员审核.",
+                        onHide () {
+                        window.history.go(-1)
+                    }
+                    })
+                  }else if(res.data == 3){
+                      AlertModule.show({
+                        title:"验证码错误！",
+                        content:"请重新输入验证码."
+                    })
+                  }else if(res.data == 4){
+                      AlertModule.show({
+                        title:"验证码失效！",
+                        content:"请重新获取验证码."
+                    })
+                  }
               })
           }
           
@@ -133,27 +163,44 @@ export default {
                   this.disabledCode = true
                   let wait = 10;
                   if(this.disabledCode){
-                      axios.post('http://192.168.1.108/public/getIdentifyingCode',{
-                          phone:this.contactPhone,
-                          type:'garrison',
-                          random:Math.floor(Math.random() * 100 + 1)
-                      }).then((respones)=>{
-                          console.log(respones)
-                      }).catch((error)=>{
-                          console.log(error)
-                      })
-                   let close = setInterval(() =>{
-                       if(wait != 0){
-                        this.getCodeText = "重新发送("+ wait +")秒";
-                         console.log(this.getCodeText)
-                        wait--
-                       }else{
-                        this.disabledCode = false
-                        console.log(this.disabledCode)
-                        this.getCodeText = '获取验证码'
-                        clearInterval(close)
-                       }
+                      this.ramdom = Math.floor(Math.random() * 100 + 1)
+                      
+              console.log("获取验证码"+this.ramdom)
+                      postData("/public/getIdentifyingCode",{
+                            phone:this.contactPhone.replace(/\s+/g,""),
+                            type:'garrison',
+                            random:this.ramdom
+                      }).then((res)=>{
+                          console.log(res)
+                          if(res.data == 0){
+                              AlertModule.show({
+                            title:"网络故障",
+                            content:"请手动刷新页面！"
+                            })
+                            this.disabledCode = false
+                          }else{
+                          let close = setInterval(() =>{
+                            if(wait != 0){
+                                this.getCodeText = "重新发送("+ wait +")秒";
+                                console.log(this.getCodeText)
+                                wait--
+                            }else{
+                                this.disabledCode = false
+                                console.log(this.disabledCode)
+                                this.getCodeText = '获取验证码'
+                                clearInterval(close)
+                            }
+                          
                    },1000)
+                      }}).catch((error)=>{
+                          console.log(error)
+                        this.disabledCode = false
+                        AlertModule.show({
+                            title:"网络故障",
+                            content:"请手动刷新页面！"
+                        })
+                      })
+                   
                 }
               }
               

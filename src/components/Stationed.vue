@@ -23,13 +23,13 @@
                 </header>
 
                      <group >
-                        <x-input title='请输入进驻码' type="number" v-model="jinzhuma">
+                        <x-input title='请输入进驻码' type="text" v-model="jinzhuma">
                             <img slot="left" class="weui-vcode-img" src="https://i.loli.net/2017/09/18/59bf7f32425d5.jpg">
                             <x-button slot="right" type="primary" mini @click.native="chaxun()">查询</x-button>
                         </x-input>
                     </group>
                     
-                    <div v-show="companyFlag">
+                    <div v-if="companyFlag">
                         <!-- 公司名字 -->
                      <group >
                          <Cell :title="compnayTitle+company" ></Cell>
@@ -38,7 +38,7 @@
                     <div class="hr"></div>
 
                     <group>
-                        <selector :options="list"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
+                        <selector :options="list" :value-map="['workno','username']"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
                     </group>
                     <group>
                         <x-input placeholder="请输入物业软件的登录账号" >
@@ -60,9 +60,9 @@
                     </group>
 
                     <group>
-                        <x-input placeholder="请输入验证码"  :max="6" >
+                        <x-input placeholder="请输入验证码"  :max="6" v-model="code">
                             <img slot="label" style="padding-right:10px;display:block;" src="../assets/code.png" width="24" height="24">
-                            <x-button slot="right" type="primary" mini>获取验证码</x-button>
+                            <x-button slot="right" type="primary" mini :text="getCodeText" :disabled="disabledCode"  @click.native="getCode"></x-button>
                         </x-input>
                     </group>
                     
@@ -78,7 +78,7 @@
 <script>
 
 import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector, AlertModule} from 'vux'
-
+import {postData} from 'src/util/base'
 export default {
   components:{
       ViewBox,
@@ -90,7 +90,7 @@ export default {
       Group,
       Cell,
       Selector,
-      AlertModule
+      AlertModule,
   },
   data(){
       return {
@@ -99,8 +99,11 @@ export default {
           companyFlag:false,
           phoneNum:null,
           defaultValue:'',
-          list: [{key: 'gd', value: '林总'}, {key: 'gx', value: '伟雄'},{key: 'gx', value: 'superpeng'}],
-          jinzhuma:''
+          list: [],
+          jinzhuma:'',
+          getCodeText:'获取验证码',
+          code:'',
+          disabledCode:false
       }
   },
   methods:{
@@ -113,17 +116,30 @@ export default {
                   title:'进驻码错误',
                   content:'请输入进驻码！'
               })
-          }else if(this.jinzhuma == 123){
-              this.company = '佛山市永利达物业服务有限公司'
-              this.companyFlag = true;
-          }else if(this.jinzhuma != 123){
-              this.companyFlag = false;
-                AlertModule.show({
-                  title:'进驻码错误',
-                  content:'请输入正确的进驻码！'
+          }else{
+              postData("/public/search",{
+                  code:this.jinzhuma
+              }).then(res => {
+                  console.log(res)
+                  if(res.data.info == 'success'){
+                    this.company = res.data.companyName
+                    for(let i = 0;i<res.data.list.length;i++){
+                        this.list.push(res.data.list[i])
+                    }
+                    console.log(this.list[0])
+                    this.companyFlag = true;
+                  }else{
+                      AlertModule.show({
+                            title:"进驻码错误！",
+                            content:"并未查询到此进驻码，请申请进驻."
+                        })
+                  }
+              }).catch(error => {
+                  console.log(error)
               })
           }
-      }
+      },
+      getCode(){}
       
   }
 
