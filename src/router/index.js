@@ -5,6 +5,7 @@ import Login from 'src/components/login'
 import Welcome from 'src/components/welcome'
 import Stationed from 'src/components/Stationed'
 import GetStationed from 'src/components/GetStationed'
+import SwitchEstate from 'src/components/switchEstate'
 
 Vue.use(Router)
 
@@ -33,6 +34,11 @@ export default new Router({
             path: '/getStationed',
             name: 'getStationed',
             component: GetStationed
+        },
+        {
+            path: '/switchEstate',
+            name: 'switchEstate',
+            component: SwitchEstate
         }
     ]
 })

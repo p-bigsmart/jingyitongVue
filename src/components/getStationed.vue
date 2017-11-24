@@ -161,7 +161,7 @@ export default {
               return false;
               }else{
                   this.disabledCode = true
-                  let wait = 10;
+                  let wait = 60;
                   if(this.disabledCode){
                       this.ramdom = Math.floor(Math.random() * 100 + 1)
                       
@@ -247,9 +247,4 @@ export default {
           }
           return true
 }
-
-                  function time(o,wait,disabledCode) {  
-                      console.log(wait)
-                    
-                }
 </script>

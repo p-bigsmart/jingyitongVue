@@ -1,0 +1,6 @@
+login--登录
+index--首页
+welcome--欢迎页
+stationed--进驻登记
+getStationed--申请进驻
+switchEstate--切换楼盘

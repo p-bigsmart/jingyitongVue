@@ -7,7 +7,7 @@
             <div class="content">
                 
                 <header>
-                    <flexbox >
+                    <flexbox>
                     <flexbox-item :span="8">
                         <div class="flex-demo" style="text-align:center">
                             <h4>欢迎您使用精易通物管助手！</h4>
@@ -29,24 +29,24 @@
                         </x-input>
                     </group>
                     
-                    <div v-if="companyFlag">
+                    <div v-show="companyFlag">
                         <!-- 公司名字 -->
-                     <group >
+                     <group style="margin-bottom:20px">
                          <Cell :title="compnayTitle+company" ></Cell>
                      </group>
 
                     <div class="hr"></div>
 
                     <group>
-                        <selector :options="list" :value-map="['workno','username']"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
+                        <selector :options="list" :value-map="['workno','username']" ref="valueMap"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
                     </group>
                     <group>
-                        <x-input placeholder="请输入物业软件的登录账号" >
+                        <x-input placeholder="请输入物业软件的登录账号" v-model="user" >
                             <img slot="label" style="padding-right:10px;display:block;" src="../assets/user.png" width="24" height="24">
                         </x-input>
                     </group>
-                    <group style="margin-bottom:1.17647059em">
-                        <x-input placeholder="请输入物业软件的登录密码" >
+                    <group style="margin-bottom:1.17647059em" >
+                        <x-input placeholder="请输入物业软件的登录密码" v-model="pass" type="password">
                             <img slot="label" style="padding-right:10px;display:block;" src="../assets/pass.png" width="24" height="24">
                         </x-input>
                     </group>
@@ -67,7 +67,7 @@
                     </group>
                     
                     <group>
-                        <x-button  type="primary"  >进驻登记</x-button>
+                        <x-button  type="primary"  @click.native="registration('valueMap')">进驻登记</x-button>
                     </group>
                     </div>
             </div>
@@ -77,8 +77,9 @@
 
 <script>
 
-import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector, AlertModule} from 'vux'
+import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector} from 'vux'
 import {postData} from 'src/util/base'
+import {p_alert,p_alert_error} from 'src/util/alert'
 export default {
   components:{
       ViewBox,
@@ -90,7 +91,9 @@ export default {
       Group,
       Cell,
       Selector,
-      AlertModule,
+      postData,
+      p_alert,
+      p_alert_error
   },
   data(){
       return {
@@ -102,8 +105,12 @@ export default {
           list: [],
           jinzhuma:'',
           getCodeText:'获取验证码',
-          code:'',
-          disabledCode:false
+          code:null,
+          disabledCode:false,
+          user:"",
+          pass:"",
+          selectValue:"",
+          random:0
       }
   },
   methods:{
@@ -112,10 +119,7 @@ export default {
       },
       chaxun(){
           if(this.jinzhuma.length == 0){
-              AlertModule.show({
-                  title:'进驻码错误',
-                  content:'请输入进驻码！'
-              })
+              p_alert('进驻码错误','请输入进驻码！')
           }else{
               postData("/public/search",{
                   code:this.jinzhuma
@@ -129,29 +133,153 @@ export default {
                     console.log(this.list[0])
                     this.companyFlag = true;
                   }else{
-                      AlertModule.show({
-                            title:"进驻码错误！",
-                            content:"并未查询到此进驻码，请申请进驻."
-                        })
+                      p_alert("进驻码错误！","并未查询到此进驻码，请申请进驻.")
                   }
               }).catch(error => {
                   console.log(error)
               })
           }
       },
-      getCode(){}
+      
+      registration (ref) {
+      if(this.$refs[ref].getFullValue() instanceof Object){
+         this.selectValue = this.$refs[ref].getFullValue()[0].workno
+         console.log(this.selectValue)
+      }else{
+          p_alert('请选择操作人员','操作人员不能为空');
+          return false;
+      }
+      if(check(this.user,this.pass,this.phoneNum)){
+          if(this.phoneNum != null){
+              if(this.code != null){
+            postData('/public/register',{
+                workno : this.selectValue,
+                username : this.user,
+                md5psw : this.pass,
+                bandmobile : this.phoneNum,
+                random : this.random,
+                code : this.code
+            }).then(res => {
+                console.log(res.data)
+                if(res.data == 0){
+                    p_alert_error()
+                }else if(res.data == 1){
+                    // 将搜索框的进驻码写入local 
+                }else if(res.data == 2){
+                    p_alert('手机号冲突','手机号码已绑定其他用户')
+                }else if(res.data == 3){
+                    p_alert('验证码错误','请重新输入验证码')
+                }else if(res.data == 4){
+                    p_alert('验证码失效','请重新获取验证码')
+                }else if(res.data == 5){
+                    p_alert("账号或密码错误",'请检查账号和密码')
+                }
+            }).catch(error => {
+                p_alert_error()
+            })
+            }else{
+                p_alert("验证码错误","请填写验证码.")
+            }
+          }else{
+              postData('/public/register',{
+                workno : this.selectValue,
+                username : this.user,
+                md5psw : this.pass
+            }).then(res => {
+                console.log(res.data)
+                if(res.data == 0){
+                    p_alert_error()
+                }else if(res.data == 1){
+                    // 将搜索框的进驻码写入local 
+                }else if(res.data == 2){
+                    p_alert('手机号冲突','手机号码已绑定其他用户')
+                }else if(res.data == 3){
+                    p_alert('验证码错误','请重新输入验证码')
+                }else if(res.data == 4){
+                    p_alert('验证码失效','请重新获取验证码')
+                }else if(res.data == 5){
+                    p_alert("账号或密码错误",'请检查账号和密码')
+                }
+            }).catch(error => {
+                console.log(error)
+            })
+          }
+      }
+    },
+    getCode(){
+        if(check(this.user,this.pass,this.phoneNum)){
+            if(this.phoneNum != null){
+                this.disabledCode = true
+                let wait = 60;
+
+                if(this.disabledCode){
+                      this.random = Math.floor(Math.random() * 100 + 1)
+              console.log("获取验证码"+this.ramdom)
+                    postData('/public/getIdentifyingCode',{
+                        phone : this.phoneNum.replace(/\s+/g,""),
+                        type : 'binding',
+                        random : this.random
+                    }).then((res)=>{
+                          console.log(res)
+                          if(res.data == 0){
+                             p_alert_error()
+                            this.disabledCode = false
+                          }else{
+                          let close = setInterval(() =>{
+                            if(wait != 0){
+                                this.getCodeText = "重新发送("+ wait +")秒";
+                                console.log(this.getCodeText)
+                                wait--
+                            }else{
+                                this.disabledCode = false
+                                console.log(this.disabledCode)
+                                this.getCodeText = '获取验证码'
+                                clearInterval(close)
+                            }
+                          
+                   },1000)
+                      }}).catch((error)=>{
+                          console.log(error)
+                        this.disabledCode = false
+                        AlertModule.show({
+                            title:"网络故障",
+                            content:"请手动刷新页面！"
+                        })
+                      })
+                   
+                }
+
+                
+            }else{
+                p_alert('请输入手机号','手机号和验证码为可填项.')
+            }
+        }
+    }
       
   }
 
+}
+
+// 判断数据是否填写完整
+ function check (user,pass,phoneNum){
+        if(user == ""){
+              p_alert("请输入登录账号","物业软件登录账号不能为空.")
+              return false;
+          }else if(pass == ""){
+              p_alert("请输入登录密码","物业软件登录密码不能为空.")
+              return false;
+          }else if(phoneNum != null){
+              if(!(/^1[34578]\d{9}$/.test(phoneNum.replace(/\s+/g,"")))){
+              p_alert("绑定手机错误","请输入正确的手机号.")
+              return false;
+              }
+          }
+          return true
 }
 </script>
 <style scoped>
 header{
     margin-top:10px;
 }
-.hr{
-    height:1px;
-    background: #bcacac;
-    margin:10px 0;
-}
+
 </style>
