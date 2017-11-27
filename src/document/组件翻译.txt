@@ -4,3 +4,4 @@ welcome--欢迎页
 stationed--进驻登记
 getStationed--申请进驻
 switchEstate--切换楼盘
+contractApproval--合同审批

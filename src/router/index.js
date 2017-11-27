@@ -6,6 +6,8 @@ import Welcome from 'src/components/welcome'
 import Stationed from 'src/components/Stationed'
 import GetStationed from 'src/components/GetStationed'
 import SwitchEstate from 'src/components/switchEstate'
+import ContractApproval from 'src/components/contractApproval'
+import Count from 'src/components/count'
 
 Vue.use(Router)
 
@@ -39,6 +41,16 @@ export default new Router({
             path: '/switchEstate',
             name: 'switchEstate',
             component: SwitchEstate
+        },
+        {
+            path: '/count',
+            name: 'count',
+            component: Count
+        },
+        {
+            path: '/contractApproval',
+            name: 'contractApproval',
+            component: ContractApproval
         }
     ]
 })

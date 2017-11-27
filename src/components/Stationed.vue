@@ -38,7 +38,7 @@
                     <div class="hr"></div>
 
                     <group>
-                        <selector :options="list" :value-map="['workno','username']" ref="valueMap"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
+                        <selector :options="list"  ref="valueMap"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
                     </group>
                     <group>
                         <x-input placeholder="请输入物业软件的登录账号" v-model="user" >
@@ -100,7 +100,7 @@ export default {
           compnayTitle:'进驻公司：',
           company:"",
           companyFlag:false,
-          phoneNum:null,
+          phoneNum:'',
           defaultValue:'',
           list: [],
           jinzhuma:'',
@@ -143,14 +143,15 @@ export default {
       
       registration (ref) {
       if(this.$refs[ref].getFullValue() instanceof Object){
-         this.selectValue = this.$refs[ref].getFullValue()[0].workno
+         this.selectValue = this.$refs[ref].getFullValue()[0].key
          console.log(this.selectValue)
       }else{
           p_alert('请选择操作人员','操作人员不能为空');
           return false;
       }
       if(check(this.user,this.pass,this.phoneNum)){
-          if(this.phoneNum != null){
+          console.log(this.phoneNum)
+          if(this.phoneNum != ''){
               if(this.code != null){
             postData('/public/register',{
                 workno : this.selectValue,
@@ -165,6 +166,14 @@ export default {
                     p_alert_error()
                 }else if(res.data == 1){
                     // 将搜索框的进驻码写入local 
+                    localStorage.setItem('jinzhuma',this.jinzhuma)
+                    AlertModule.show({
+                        title: '进驻成功',
+                        content: '点击确认跳转到登录',
+                        onHide (){
+                            this.$router.push('./login')
+                        }
+                    })
                 }else if(res.data == 2){
                     p_alert('手机号冲突','手机号码已绑定其他用户')
                 }else if(res.data == 3){
@@ -181,40 +190,19 @@ export default {
                 p_alert("验证码错误","请填写验证码.")
             }
           }else{
-              postData('/public/register',{
-                workno : this.selectValue,
-                username : this.user,
-                md5psw : this.pass
-            }).then(res => {
-                console.log(res.data)
-                if(res.data == 0){
-                    p_alert_error()
-                }else if(res.data == 1){
-                    // 将搜索框的进驻码写入local 
-                }else if(res.data == 2){
-                    p_alert('手机号冲突','手机号码已绑定其他用户')
-                }else if(res.data == 3){
-                    p_alert('验证码错误','请重新输入验证码')
-                }else if(res.data == 4){
-                    p_alert('验证码失效','请重新获取验证码')
-                }else if(res.data == 5){
-                    p_alert("账号或密码错误",'请检查账号和密码')
-                }
-            }).catch(error => {
-                console.log(error)
-            })
+              p_alert('请输入手机号','手机号不能为空')
           }
       }
     },
     getCode(){
         if(check(this.user,this.pass,this.phoneNum)){
-            if(this.phoneNum != null){
+            if(this.phoneNum != ''){
                 this.disabledCode = true
                 let wait = 60;
 
                 if(this.disabledCode){
                       this.random = Math.floor(Math.random() * 100 + 1)
-              console.log("获取验证码"+this.ramdom)
+              console.log("获取验证码"+this.random)
                     postData('/public/getIdentifyingCode',{
                         phone : this.phoneNum.replace(/\s+/g,""),
                         type : 'binding',
@@ -251,7 +239,7 @@ export default {
 
                 
             }else{
-                p_alert('请输入手机号','手机号和验证码为可填项.')
+                p_alert('请输入手机号','手机号不能为空.')
             }
         }
     }
@@ -268,11 +256,17 @@ export default {
           }else if(pass == ""){
               p_alert("请输入登录密码","物业软件登录密码不能为空.")
               return false;
-          }else if(phoneNum != null){
+          } 
+          if(phoneNum != ''){
+
+              console.log("check:"+phoneNum)
               if(!(/^1[34578]\d{9}$/.test(phoneNum.replace(/\s+/g,"")))){
               p_alert("绑定手机错误","请输入正确的手机号.")
               return false;
               }
+          }else if(phoneNum == ''){
+              p_alert("请输入手机号","手机号不能为空.")
+              return false
           }
           return true
 }

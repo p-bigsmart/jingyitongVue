@@ -33,21 +33,31 @@
 
 <script>
 import {ViewBox,XHeader, AlertModule} from 'vux'
-
+import {p_alert, p_alert_error} from 'src/util/alert'
+import {postData} from 'src/util/base'
 export default {
     components:{
         ViewBox,
         XHeader,
-        AlertModule
+        AlertModule,
+        p_alert,
+        p_alert_error,
+        postData
     },
     data(){
         return{
             showBack:true,
             name:'',
-            pass:''
+            pass:'',
+            jinzhuma:''
         }
     },
     created(){
+        if(localStorage.hasOwnProperty('jinzhuma')){
+           this.jinzhuma = localStorage.getItem('jinzhuma')
+        }else{
+            this.jinzhuma = ''
+        }
         
     },
     methods: {
@@ -56,22 +66,25 @@ export default {
              AlertModule.show({
                 title: '用户名错误',
                 content: '请输入用户名！'
-                // ,onShow () {
-                // console.log('Module: I\'m showing')
-                // },
-                // onHide () {
-                // console.log('Module: I\'m hiding now')
-                // }
             })
         }else
-        if(this.pass.length == 0 || this.pass.length < 6 || this.pass.length > 18){
-             AlertModule.show({
-                title: '密码错误',
-                content: '请输入6-18位密码！'
-            })
+        if(this.pass.length == 0 ){
+             p_alert( '密码错误', '请输入6-18位密码！')
         }else{
-            // axios.post('')
-             this.$router.push('./index')
+            console.log("进驻码：",this.jinzhuma)
+             postData('/login.action',{
+                 username : this.name.replace(/\s+\g/,''),
+                 password : this.pass.replace(/\s+\g/,''),
+                 code : this.jinzhuma
+             }).then(res => {
+                //  登录成功
+                //   将用户名和密码都写入local
+                 console.log(res)
+                localStorage.setItem('user',this.username)
+                localStorage.setItem('pass',this.pass)
+             }).catch(err => {
+                 console.log(res)
+             })
         }
     },
     goStationed(){

@@ -1,7 +1,7 @@
 <template>
 
    <div class="height100">
-     <link rel="stylesheet" href="http://at.alicdn.com/t/font_475813_9og1rj53a2az6w29.css">
+     
    <view-box ref="viewBox">
 
      <x-header >
@@ -37,14 +37,14 @@
       <grid-item label='车牌查询'>
         <img slot="icon" src="../assets/chaxun.png">
       </grid-item>
-      <grid-item label='设备巡检'>
+      <grid-item label='安保设备'>
         <img slot="icon" src="../assets/jiancha.png">
+      </grid-item>
+      <grid-item label='清洁绿化'>
+        <img slot="icon" src="../assets/jifei.png">
       </grid-item>
       <grid-item label='扫码抄表'>
         <img slot="icon" src="../assets/saoma.png">
-      </grid-item>
-      <grid-item label='计费查询'>
-        <img slot="icon" src="../assets/jifei.png">
       </grid-item>
       <grid-item label='欠费查询'>
         <img slot="icon" src="../assets/qianfei.png">

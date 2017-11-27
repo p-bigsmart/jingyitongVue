@@ -28,7 +28,7 @@
                 </header>
                 <div class="hr"></div>
                 <group>
-                        <x-input placeholder="请输入物业软件的登录账号" v-model="user" >
+                        <x-input placeholder="请输入物业软件的登录账号" v-model="user" mask="999 9999 9999">
                             <img slot="label" style="padding-right:10px;display:block;" src="../assets/user.png" width="24" height="24">
                         </x-input>
                     </group>
@@ -38,18 +38,26 @@
                         </x-input>
                     </group>
                     <group>
-                        <x-button  type="primary"  @click.native="registration('valueMap')">验证</x-button>
+                        <x-button  type="primary"  @click.native="verification">验证</x-button>
                     </group>
 
                 <div v-show="yanzhengFlag">
-
+                    <h1 class="p_h1">欢迎您：林先生，你已通过验证</h1>
+                    <div class="hr"></div>
+                    <group title="请选择您授权的楼盘：">
+                         <selector :options="list"  ref="valueMap"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
+                    </group>
+                    
+                    <group>
+                        <x-button  type="primary"  @click.native="switchBtn('valueMap')">确定</x-button>
+                    </group>
                 </div>
           </div>
     </div>
 </template>
 
 <script>
-import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem} from 'vux'
+import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector} from 'vux'
 import {p_alert,p_alert_error} from 'src/util/alert'
 import {postData} from 'src/util/base'
 
@@ -57,7 +65,10 @@ export default {
   data(){
       return {
           user:"",
-          pass:""
+          pass:"",
+          yanzhengFlag : false,
+          list: [{key: 'gd', value: '广东'}, {key: 'gx', value: '广西'}],
+          defaultValue:''
       }
   },
   components:{
@@ -69,7 +80,31 @@ export default {
       XInput,
       Flexbox,
       FlexboxItem,
-      Group
+      Group,
+      Selector
+  },
+  methods:{
+      verification(){
+          if(this.user == '' && this.pass == ''){
+              p_alert('请输入用户名密码','用户名和密码不能为空.')
+          }else{
+            //   切换楼盘
+            //   postData('')
+            this.yanzhengFlag = true
+          }
+      },
+      onChange(val){
+          console.log(val)
+      },
+      switchBtn(ref){
+        if(this.$refs[ref].getFullValue() instanceof Object){
+                this.selectValue = this.$refs[ref].getFullValue()[0].key
+                console.log(this.selectValue)
+        }else{
+                p_alert('请选择要切换的楼盘','切换楼盘不能为空.');
+                return false;
+        }
+      }
   }
 }
 </script>
