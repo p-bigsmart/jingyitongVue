@@ -7,6 +7,7 @@ import Stationed from 'src/components/Stationed'
 import GetStationed from 'src/components/GetStationed'
 import SwitchEstate from 'src/components/switchEstate'
 import ContractApproval from 'src/components/contractApproval'
+import ContractDetails from 'src/components/contractDetails'
 import Count from 'src/components/count'
 
 Vue.use(Router)
@@ -51,6 +52,11 @@ export default new Router({
             path: '/contractApproval',
             name: 'contractApproval',
             component: ContractApproval
+        },
+        {
+            path: '/contractDetails',
+            name: 'contractDetails',
+            component: ContractDetails
         }
     ]
 })
