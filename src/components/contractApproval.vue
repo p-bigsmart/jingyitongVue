@@ -39,7 +39,7 @@
                     <flexboxItem>
                             <div class="marginTop10 text_right marginBottom10">
                                 <XButton v-text="btnText1" mini type="warn" @click.native="alertShow"></XButton>
-                                <XButton v-text="btnText2" mini type="primary"></XButton>
+                                <XButton v-text="btnText2" mini type="primary" link="./contractDetails"></XButton>
                             </div>
                     </flexboxItem>
                 </flexbox>

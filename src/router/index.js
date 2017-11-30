@@ -8,6 +8,10 @@ import GetStationed from 'src/components/GetStationed'
 import SwitchEstate from 'src/components/switchEstate'
 import ContractApproval from 'src/components/contractApproval'
 import ContractDetails from 'src/components/contractDetails'
+import Complaints from 'src/components/complaints'
+import ComplaintsDetails from 'src/components/complaintsDetails'
+import RepairProcessing from 'src/components/repairProcessing'
+import RepairDetails from 'src/components/repairDetails'
 import Count from 'src/components/count'
 
 Vue.use(Router)
@@ -57,6 +61,26 @@ export default new Router({
             path: '/contractDetails',
             name: 'contractDetails',
             component: ContractDetails
+        },
+        {
+            path: '/complaints',
+            name: 'complaints',
+            component: Complaints
+        },
+        {
+            path: '/complaintsDetails',
+            name: 'complaintsDetails',
+            component: ComplaintsDetails
+        },
+        {
+            path: '/repairProcessing',
+            name: 'repairProcessing',
+            component: RepairProcessing
+        },
+        {
+            path: '/repairDetails',
+            name: 'repairDetails',
+            component: RepairDetails
         }
     ]
 })
