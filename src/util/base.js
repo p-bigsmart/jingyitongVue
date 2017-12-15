@@ -17,6 +17,7 @@ axios.defaults.timeout = 20000;
 
 axios.defaults.withCredentials = true;
 
+
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8;Accept-Language:zh-CN,zh;q=0.8';
 
 export const getData = (url, param) => {
@@ -25,17 +26,6 @@ export const getData = (url, param) => {
     )
 }
 
-/*export const postData = (url, param) => {
-    return (
-        axios.post(`${url}`, param).then((res)=>{
-            return res.data
-        }).catch((error)=>{
-            // 失败回调 失败alert 失败
-            alert(`失败了,${error}`);
-            console.log(error);
-        })
-    )
-}*/
 export const postData = (url, param) => {
     return (
         axios.post(`${url}`, param)

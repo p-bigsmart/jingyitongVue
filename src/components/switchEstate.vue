@@ -16,7 +16,7 @@
                     <flexbox-item :span="8">
                         <div class="left20 flex-demo">
                             <span>您进驻的物业是：</span>
-                            <h4>佛山市永利达物业服务有限公司</h4>
+                            <h4 v-text="this.tStationedEnterprises"></h4>
                         </div>
                     </flexbox-item>
                     <flexbox-item>
@@ -57,59 +57,103 @@
 </template>
 
 <script>
-import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector} from 'vux'
-import {p_alert,p_alert_error} from 'src/util/alert'
-import {postData} from 'src/util/base'
+import {
+  XButton,
+  XHeader,
+  XInput,
+  Group,
+  Flexbox,
+  FlexboxItem,
+  Selector
+} from "vux";
+import { p_alert, p_alert_error } from "src/util/alert";
+import { postData } from "src/util/base";
 
 export default {
-  data(){
-      return {
-          user:"",
-          pass:"",
-          yanzhengFlag : false,
-          list: [{key: 'gd', value: '广东'}, {key: 'gx', value: '广西'}],
-          defaultValue:''
+  components: {
+    p_alert,
+    p_alert_error,
+    postData,
+    XButton,
+    XHeader,
+    XInput,
+    Flexbox,
+    FlexboxItem,
+    Group,
+    Selector
+  },
+  data() {
+    return {
+      user: "",
+      pass: "",
+      yanzhengFlag: false,
+      list: [{ key: "gd", value: "广东" }, { key: "gx", value: "广西" }],
+      defaultValue: "",
+      //   进驻企业
+      tStationedEnterprises:'',
+    };
+  },
+  methods: {
+    verification() {
+      if (this.user == "" && this.pass == "") {
+        p_alert("请输入用户名密码", "用户名和密码不能为空.");
+      } else {
+        //   切换楼盘
+        postData('/fdset/verifyIdentity',{
+            username:this.user.replace(/(\s*$)/g, ""),
+            password:this.pass.replace(/(\s+$)/g,""),
+            code:localStorage.getItem('jinzhuma')
+        }).then(res =>{
+            switch(res.data.result){
+                case 0:
+                    p_alert_error()
+                    break;
+                case 1:
+                    this.yanzhengFlag = true;
+                    break;
+                case 3:
+                    p_alert('进驻码出错','请从新申请进驻.')
+                case 5:
+                    p_alert('登录出错','账号或密码错误，请从新确认.')
+            }
+            console.log(res)
+        })
+        // this.yanzhengFlag = true;
       }
+    },
+    onChange(val) {
+      console.log(val);
+    },
+    switchBtn(ref) {
+      if (this.$refs[ref].getFullValue() instanceof Object) {
+        this.selectValue = this.$refs[ref].getFullValue()[0].key;
+        console.log(this.selectValue);
+      } else {
+        p_alert("请选择要切换的楼盘", "切换楼盘不能为空.");
+        return false;
+      }
+    }
   },
-  components:{
-      p_alert,
-      p_alert_error,
-      postData,
-      XButton,
-      XHeader,
-      XInput,
-      Flexbox,
-      FlexboxItem,
-      Group,
-      Selector
-  },
-  methods:{
-      verification(){
-          if(this.user == '' && this.pass == ''){
-              p_alert('请输入用户名密码','用户名和密码不能为空.')
-          }else{
-            //   切换楼盘
-            //   postData('')
-            this.yanzhengFlag = true
-          }
-      },
-      onChange(val){
-          console.log(val)
-      },
-      switchBtn(ref){
-        if(this.$refs[ref].getFullValue() instanceof Object){
-                this.selectValue = this.$refs[ref].getFullValue()[0].key
-                console.log(this.selectValue)
+  created() {
+    //   进来就获取进驻企业名称
+    postData("public/search", {
+      code: localStorage.getItem("jinzhuma")
+    })
+      .then(res => {
+        if (res.data.info == "success") {
+            this.tStationedEnterprises = res.data.companyName
         }else{
-                p_alert('请选择要切换的楼盘','切换楼盘不能为空.');
-                return false;
+            p_alert_error()
         }
-      }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
-}
+};
 </script>
 <style scoped>
-header{
-    margin-top:10px;
+header {
+  margin-top: 10px;
 }
 </style>

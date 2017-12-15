@@ -5,3 +5,12 @@ stationed--进驻登记
 getStationed--申请进驻
 switchEstate--切换楼盘
 contractApproval--合同审批
+contractDetails--合同审批结果
+scanCodeReading--扫码抄表
+complaints--投诉
+complaintsDetails--投诉详情
+licensePlate--车牌查询
+repairProcessing--报修
+repairDetails--报修详情
+scanCodeReading--扫码抄表
+scanCodeReadingDetails--扫码抄表详情

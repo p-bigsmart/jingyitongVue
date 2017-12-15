@@ -34,7 +34,7 @@
 <script>
 import {ViewBox,XHeader, AlertModule} from 'vux'
 import {p_alert, p_alert_error} from 'src/util/alert'
-import {postData} from 'src/util/base'
+import axios from 'axios'
 export default {
     components:{
         ViewBox,
@@ -42,7 +42,7 @@ export default {
         AlertModule,
         p_alert,
         p_alert_error,
-        postData
+        axios
     },
     data(){
         return{
@@ -72,19 +72,28 @@ export default {
              p_alert( '密码错误', '请输入6-18位密码！')
         }else{
             console.log("进驻码：",this.jinzhuma)
-             postData('/login.action',{
-                 username : this.name.replace(/\s+\g/,''),
-                 password : this.pass.replace(/\s+\g/,''),
-                 code : this.jinzhuma
-             }).then(res => {
-                //  登录成功
-                //   将用户名和密码都写入local
-                 console.log(res)
-                localStorage.setItem('user',this.username)
-                localStorage.setItem('pass',this.pass)
-             }).catch(err => {
-                 console.log(res)
-             })
+            var params = {
+                username : this.name.replace(/\s+\g/,''),
+                password : this.pass.replace(/\s+\g/,''),
+                code : this.jinzhuma
+            }
+            var qs=require('qs');
+            var instance = axios.create({
+                  headers: {'Content-Type': 'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest'}
+            });
+            var that = this
+            instance.post('login.action', params).then(res => {
+                console.log(res.data)
+                if(res.data.success){
+                    localStorage.setItem('user',that.name)
+                    localStorage.setItem('pass',that.pass)
+                    this.$router.push('./index')
+                }else{
+                    p_alert('登录错误',res.data.message)
+                }
+            }).catch(err => {
+                
+            });
         }
     },
     goStationed(){

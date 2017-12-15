@@ -113,6 +113,8 @@ export default {
             placeholder2:'请输入数字签名',
             // 弹框Title
             alertTitle:'合同生效审批',
+            // 进驻码
+            jinzhuma:''
           }
     },
     components:{
@@ -138,6 +140,14 @@ export default {
         alertTijiao(){
             this.showScrollBox = false;
         }
+    },
+    created(){
+        // 这里还缺少楼盘编号
+        this.jinzhuma = localStorage.getItem('jinzhuma')
+        // postData("/httable/selectListAll",{
+        //     code:this.jinzhuma,
+
+        // })
     }
 }
 </script>

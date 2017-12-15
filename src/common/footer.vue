@@ -17,7 +17,7 @@
        <i class="iconfont icon-jiankong" slot="icon"></i>
         <span slot="label">租控图</span>
       </tabbar-item>
-      <tabbar-item >
+      <tabbar-item link="./switchEstate">
        <i class="iconfont icon-VPN" slot="icon"></i>
         <span slot="label">切换楼盘</span>
       </tabbar-item>

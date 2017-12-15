@@ -12,6 +12,8 @@ import Complaints from 'src/components/complaints'
 import ComplaintsDetails from 'src/components/complaintsDetails'
 import RepairProcessing from 'src/components/repairProcessing'
 import RepairDetails from 'src/components/repairDetails'
+import LicensePlate from 'src/components/licensePlate'
+import ScanCodeReading from 'src/components/scanCodeReading'
 import Count from 'src/components/count'
 
 Vue.use(Router)
@@ -81,6 +83,16 @@ export default new Router({
             path: '/repairDetails',
             name: 'repairDetails',
             component: RepairDetails
+        },
+        {
+            path: '/licensePlate',
+            name: 'licensePlate',
+            component: LicensePlate
+        },
+        {
+            path: '/scanCodeReading',
+            name: 'scanCodeReading',
+            component: ScanCodeReading
         }
     ]
 })

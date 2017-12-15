@@ -77,7 +77,7 @@
 
 <script>
 
-import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector} from 'vux'
+import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector, AlertModule } from 'vux'
 import {postData} from 'src/util/base'
 import {p_alert,p_alert_error} from 'src/util/alert'
 export default {
@@ -93,7 +93,8 @@ export default {
       Selector,
       postData,
       p_alert,
-      p_alert_error
+      p_alert_error,
+      AlertModule 
   },
   data(){
       return {
@@ -150,6 +151,7 @@ export default {
           return false;
       }
       if(check(this.user,this.pass,this.phoneNum)){
+                var that = this
           console.log(this.phoneNum)
           if(this.phoneNum != ''){
               if(this.code != null){
@@ -159,19 +161,18 @@ export default {
                 md5psw : this.pass,
                 bandmobile : this.phoneNum,
                 random : this.random,
-                code : this.code
+                verifyCode : this.code
             }).then(res => {
-                console.log(res.data)
                 if(res.data == 0){
                     p_alert_error()
                 }else if(res.data == 1){
                     // 将搜索框的进驻码写入local 
-                    localStorage.setItem('jinzhuma',this.jinzhuma)
+                     localStorage.setItem('jinzhuma',this.jinzhuma)
                     AlertModule.show({
                         title: '进驻成功',
                         content: '点击确认跳转到登录',
                         onHide (){
-                            this.$router.push('./login')
+                            that.$router.push('./login')
                         }
                     })
                 }else if(res.data == 2){
@@ -194,6 +195,7 @@ export default {
           }
       }
     },
+    // 获取验证码
     getCode(){
         if(check(this.user,this.pass,this.phoneNum)){
             if(this.phoneNum != ''){
@@ -202,7 +204,7 @@ export default {
 
                 if(this.disabledCode){
                       this.random = Math.floor(Math.random() * 100 + 1)
-              console.log("获取验证码"+this.random)
+            //   console.log("获取随机数"+this.random)
                     postData('/public/getIdentifyingCode',{
                         phone : this.phoneNum.replace(/\s+/g,""),
                         type : 'binding',
@@ -216,18 +218,15 @@ export default {
                           let close = setInterval(() =>{
                             if(wait != 0){
                                 this.getCodeText = "重新发送("+ wait +")秒";
-                                console.log(this.getCodeText)
                                 wait--
                             }else{
                                 this.disabledCode = false
-                                console.log(this.disabledCode)
                                 this.getCodeText = '获取验证码'
                                 clearInterval(close)
                             }
                           
                    },1000)
                       }}).catch((error)=>{
-                          console.log(error)
                         this.disabledCode = false
                         AlertModule.show({
                             title:"网络故障",

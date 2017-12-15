@@ -6,7 +6,7 @@
 
      <x-header >
        精易通物管助手
-       <span slot="right">注销登陆</span>
+       <span slot="right" @click="quit()">注销登陆</span>
      </x-header> 
 
      <div class="content">
@@ -25,28 +25,28 @@
         <swiper-item><div id="myChart2" :style="{width: '100%', height: '200px'}"></div></swiper-item>
        </swiper>
       <grid  :cols="3">
-      <grid-item label="合同审批">
+      <grid-item label="合同审批" link="./contractApproval">
         <img slot="icon" src="../assets/shengpi.png">
       </grid-item>
-      <grid-item label='报修'>
+      <grid-item label='报修' link="./repairProcessing">
         <img slot="icon" src="../assets/baoxiu.png">
       </grid-item>
-      <grid-item label='投诉'>
+      <grid-item label='投诉' link="./complaints">
         <img slot="icon" src="../assets/tousu.png">
       </grid-item>
-      <grid-item label='车牌查询'>
+      <grid-item label='车牌查询' link="./licensePlate">
         <img slot="icon" src="../assets/chaxun.png">
       </grid-item>
-      <grid-item label='安保设备'>
+      <grid-item label='安保设备' link="">
         <img slot="icon" src="../assets/jiancha.png">
       </grid-item>
       <grid-item label='清洁绿化'>
         <img slot="icon" src="../assets/jifei.png">
       </grid-item>
-      <grid-item label='扫码抄表'>
+      <grid-item label='扫码抄表' link="./scanCodeReading">
         <img slot="icon" src="../assets/saoma.png">
       </grid-item>
-      <grid-item label='欠费查询'>
+      <grid-item label='欠费查询' link="">
         <img slot="icon" src="../assets/qianfei.png">
       </grid-item>
       <grid-item label='现场缴费'>
@@ -62,11 +62,23 @@
 
 
 <script>
-
-import {Search, XButton, Swiper, SwiperItem, ViewBox, XHeader, CellFormPreview, Group, Cell, Grid, GridItem } from 'vux'
-import axios from 'axios'
-import commonFooter from 'src/common/footer'
-
+import {
+  Search,
+  XButton,
+  Swiper,
+  SwiperItem,
+  ViewBox,
+  XHeader,
+  CellFormPreview,
+  Group,
+  Cell,
+  Grid,
+  GridItem
+} from "vux";
+import commonFooter from "src/common/footer";
+import axios from "axios";
+import { postData, allData } from "src/util/base";
+import { p_alert, p_alert_error } from "src/util/alert";
 export default {
   components: {
     CellFormPreview,
@@ -80,112 +92,230 @@ export default {
     GridItem,
     commonFooter,
     Search,
-    XButton
+    XButton,
+    axios,
+    postData,
+    allData,
+    p_alert,
+    p_alert_error
   },
-  data () {
+  data() {
     return {
-      list: [{
-        label: 'Apple',
-        value: '3.29'
-      }, {
-        label: 'Banana',
-        value: '1.04'
-      }, {
-        label: 'Fish',
-        value: '8.00'
-      }],
-      chartArr1 : [1,2,3,4,5,6,7],
-      chartData2 :[30,75,84,24,68,60,10],
-      results:[],
-      value: ''
+      list: [
+        {
+          label: "Apple",
+          value: "3.29"
+        },
+        {
+          label: "Banana",
+          value: "1.04"
+        },
+        {
+          label: "Fish",
+          value: "8.00"
+        }
+      ],
+      chartArr1: [1, 2, 3, 4, 5, 6, 7],
+      aCollectionRate: [],
+      results: [],
+      value: "",
+      // 楼盘名称
+      realEstate: "",
+      // 轮播图名称
+      lunboTitle: "",
+      // 今日收款数
+      gathering: 0,
+      // 收缴率List,包含天数和收缴率
+      aCollectionRateMonth: [],
+      // 今天签订合同数
+      signNum: "",
+      // 出租楼层名称
+      aOccupancyName: [],
+      // 出租率
+      aOccupancyRate: []
+    };
+  },
+  created() {
+    // 获取楼盘名称
+    function getbuildingName() {
+      return axios.post("/fdset/getBuildingName", {
+        //这里的01要换成null
+        fdno: localStorage.getItem("fdno")
+          ? localStorage.getItem("fdno")
+          : "01",
+        code: localStorage.getItem("jinzhuma")
+      });
     }
+    // 获取收缴率与今天收款数
+    function getCollectionRate() {
+      return axios.post("/skdtb/getCollectionRate", {
+        //这里的01要换成null
+        fdno: localStorage.getItem("fdno")
+          ? localStorage.getItem("fdno")
+          : "01",
+        code: localStorage.getItem("jinzhuma")
+      });
+    }
+
+    // 获取出租率与今天签订合同数
+    function getRentalRate() {
+      return axios.post("/wyfl/getRentalRate", {
+        //这里的01要换成null
+        fdno: localStorage.getItem("fdno")
+          ? localStorage.getItem("fdno")
+          : "01",
+        code: localStorage.getItem("jinzhuma")
+      });
+    }
+    axios.all([getbuildingName(), getCollectionRate(), getRentalRate()]).then(
+      axios.spread((name, colle, rental) => {
+        console.log(name.data.value, colle, rental);
+        if (name.status != 200 || colle.status != 200 || rental.status != 200) {
+          p_alert_error();
+        } else {
+          // 轮播图title
+          this.lunboTitle = name.data.value;
+          // 今日收款数
+          this.gathering = colle.data.gathering;
+          // 收缴率list，有月份和金额
+          for (let i = 0; i < colle.data.list.length; i++) {
+            this.aCollectionRateMonth.push(parseInt(colle.data.list[i].key));
+            this.aCollectionRate.push(parseInt(colle.data.list[i].value));
+          }
+          // 今天签订合同数
+          this.signNum = rental.data.signNum;
+          // 出租率list，有楼栋名称和楼栋的出租率
+          for (let i = 0; i < rental.data.list.length; i++) {
+            this.aOccupancyName.push(rental.data.list[i].key);
+            this.aOccupancyRate.push(parseInt(rental.data.list[i].value));
+          }
+          // 调用echarts方法
+          this.drawLine();
+          this.aaa();
+          // 将楼盘编号写入local
+          localStorage.setItem("fdno", name.data.key);
+        }
+      })
+    );
   },
-  mounted(){
-    this.drawLine();
-    this.aaa();
-  },
-  methods:{
-     charts(id,title,subtext,subNumber,type,xAxisData,seriesname,seriestype,seriesData){
-  // 基于准备好的dom，初始化echarts实例
-        let myChart = this.$echarts.init(document.getElementById(id))
-        // 绘制图表
-        myChart.setOption({
-            title: { 
-              text: title,
-              left:"center",
-              subtext: subtext+subNumber,
-              subtextStyle:{
-                verticalAlign:"top"
-              }
-            },
-            tooltip: {trigger: 'none',
-            axisPointer: {
-                type: type
-            }},
-            xAxis: {
-                data: xAxisData 
-            },
-            yAxis: {},
-            series: [{
-                name: seriesname,
-                type: seriestype,
-                data: seriesData
-            }]
-        });
-},
-    drawLine(){
-        this.charts('myChart','永利达收缴率','今日收款','7854元','cross',this.chartArr1,'收缴率','line',this.chartData2)
+  methods: {
+    charts(
+      id,
+      title,
+      subtext,
+      subNumber,
+      type,
+      xAxisData,
+      seriesname,
+      seriestype,
+      seriesData
+    ) {
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = this.$echarts.init(document.getElementById(id));
+      // 绘制图表
+      myChart.setOption({
+        title: {
+          text: title,
+          left: "center",
+          subtext: subtext + subNumber,
+          subtextStyle: {
+            verticalAlign: "top"
+          }
+        },
+        tooltip: {
+          trigger: "none",
+          axisPointer: {
+            type: type
+          }
+        },
+        xAxis: {
+          data: xAxisData
+        },
+        yAxis: {},
+        series: [
+          {
+            name: seriesname,
+            type: seriestype,
+            data: seriesData
+          }
+        ]
+      });
     },
-    aaa(){
-        this.charts('myChart2','永利达出租率','今日签订合同',5,'cross',this.chartArr1,'收缴率','bar',this.chartData2)
+    drawLine() {
+      this.charts(
+        "myChart",
+        this.lunboTitle + "收缴率",
+        "今日收款:",
+        this.gathering,
+        "cross",
+        this.aCollectionRateMonth,
+        "收缴率",
+        "line",
+        this.aCollectionRate
+      );
     },
-    resultClick (item) {
-      alert('you click the result item: ' + JSON.stringify(item))
-      document.getElementsByClassName('vux-slider')[0].style.marginTop = '10px'
+    aaa() {
+      this.charts(
+        "myChart2",
+        this.lunboTitle + "出租率",
+        "今日签订合同:",
+        this.signNum,
+        "cross",
+        this.aOccupancyName,
+        "收缴率",
+        "bar",
+        this.aOccupancyRate
+      );
     },
-    getResult (val) {
-      console.log('on-change', val)
-      this.results = val ? getResult(this.value) : []
+    resultClick(item) {
+      alert("you click the result item: " + JSON.stringify(item));
+      document.getElementsByClassName("vux-slider")[0].style.marginTop = "10px";
     },
-    onSubmit () {
-      this.$refs.search.setBlur()
-      
+    getResult(val) {
+      console.log("on-change", val);
+      this.results = val ? getResult(this.value) : [];
     },
-    onFocus () {
-      console.log('on focus')
-      document.getElementsByClassName('vux-slider')[0].style.marginTop = '54px'
+    onSubmit() {
+      this.$refs.search.setBlur();
     },
-    onCancel () {
-      console.log('on cancel')
-      document.getElementsByClassName('vux-slider')[0].style.marginTop = '10px'
+    onFocus() {
+      console.log("on focus");
+      document.getElementsByClassName("vux-slider")[0].style.marginTop = "54px";
+    },
+    onCancel() {
+      console.log("on cancel");
+      document.getElementsByClassName("vux-slider")[0].style.marginTop = "10px";
+    },
+    quit(){
+      // 换了环境，也要修改这个地址
+      location.href = 'http://192.168.1.108:8080/logout.action'
+      localStorage.removeItem('user')
+      localStorage.removeItem('pass')
     }
   }
-}
+};
 
-function getResult (val) {
-  let rs = []
+function getResult(val) {
+  let rs = [];
   for (let i = 0; i < 10; i++) {
     rs.push({
       title: `${val} result: ${i + 1} `,
-      other: 'bb'
-    })
+      other: "bb"
+    });
   }
-  return rs
+  return rs;
 }
-
 </script>
 
 <style lang="less">
-
-@import '../css/reset.less';
+@import "../css/reset.less";
 
 .popup0 {
-  padding-bottom:15px;
-  height:200px;
+  padding-bottom: 15px;
+  height: 200px;
 }
 .popup1 {
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
-
 </style>

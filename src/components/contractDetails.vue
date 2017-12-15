@@ -66,7 +66,7 @@
                             <img slot="label" style="padding-right:10px;display:block;" src="http://dn-placeholder.qbox.me/110x110/FF2D55/000" width="24" height="24">
                         </x-input>
                     </group>
-                    <div style="padding:20px 0"><x-button text="批准生效" type="primary" @click.native="alertTijiao"></x-button></div>
+                    <div style="padding:20px 0"><x-button text="批准生效" type="primary"></x-button></div>
                     
                 <common-footer></common-footer>
               </div>
@@ -109,15 +109,6 @@ export default {
     white-space:nowrap;
 text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
 }
-.marginTop10{
-    margin-top:6px;
-}
-.marginBottom10{
-    margin-bottom:6px;
-}
-.padding15{
-    padding: 0 15px;
 
-}
 
 </style>

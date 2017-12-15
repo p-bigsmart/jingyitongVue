@@ -22,11 +22,16 @@
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">投诉人:中山市工业进出口开发有限公司</div></flexboxItem>
                      <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">A座301</div></flexboxItem>
-                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">tubiao</div></flexboxItem>
+                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10"><img src="../assets/GPS.png" alt=""></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">联系人：张先生13834488888</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">接待人：小李</div></flexboxItem>
+                    <flexboxItem>
+                        <div class="fontSize14 marginTop10">
+                            联系人：张先生13834488888 
+                        <img style="vertical-align:middle" src="../assets/phone.png" alt="" >
+                        </div>
+                    </flexboxItem>
+                    <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10" style="height:28px;">接待人：小李</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">投诉时间：2017-11-01 10:30</div></flexboxItem>
@@ -56,72 +61,82 @@
 </template>
 
 <script>
-import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom} from 'vux'
+import {
+  XButton,
+  XHeader,
+  XInput,
+  Group,
+  Flexbox,
+  FlexboxItem,
+  Selector,
+  XDialog,
+  TransferDomDirective as TransferDom
+} from "vux";
 
-import { p_alert, p_alert_error } from 'src/util/alert'
-import { postData } from 'src/util/base'
-import commonFooter from 'src/common/footer'
-export default{
-    components:{
-        XButton,
-        XHeader,
-        Group,
-        Flexbox,
-        p_alert,
-        p_alert_error,
-        commonFooter,
-        Selector,
-        FlexboxItem,
-        XDialog,
-        XInput
-    },
-    data(){
-        return {
-            searchVal:'',
-            status:'未处理'
-        }
-    },
-    methods:{
-        search(){
-            console.log(1)
-        }
+import { p_alert, p_alert_error } from "src/util/alert";
+import { postData } from "src/util/base";
+import commonFooter from "src/common/footer";
+export default {
+  components: {
+    XButton,
+    XHeader,
+    Group,
+    Flexbox,
+    p_alert,
+    p_alert_error,
+    commonFooter,
+    Selector,
+    FlexboxItem,
+    XDialog,
+    XInput
+  },
+  data() {
+    return {
+      searchVal: "",
+      status: "未处理"
+    };
+  },
+  methods: {
+    search() {
+      console.log(1);
     }
-}
+  }
+};
 </script>
 
 <style scoped>
-.searchVal{
-    height:30px;
-    border:none;
-    border-radius: 3px;
-    padding-left:5px;
-    outline: none;
+.searchVal {
+  height: 30px;
+  border: none;
+  border-radius: 3px;
+  padding-left: 5px;
+  outline: none;
 }
-.searchBtn{
-    height:30px;
-    padding:0 3px;
-    border-radius: 50%;
-    border:none;
-    outline:none;
+.searchBtn {
+  height: 30px;
+  padding: 0 3px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
 }
-nav{
-    margin-top:10px;
-    background:white;
-    padding:0 10px;
+nav {
+  margin-top: 10px;
+  background: white;
+  padding: 0 10px;
 }
-.border_bottom{
-    border-bottom: 1px soli red;
+.border_bottom {
+  border-bottom: 1px soli red;
 }
-.fontSize14{
-    font-size:14px;
-    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
-    white-space:nowrap;
-text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+.fontSize14 {
+  font-size: 14px;
+  overflow: hidden; /* 内容超出宽度时隐藏超出部分的内容 */
+  white-space: nowrap;
+  text-overflow: ellipsis; /* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
 }
-.marginTop10{
-    margin-top:6px;
+.marginTop10 {
+  margin-top: 6px;
 }
-.marginBottom10{
-    margin-bottom:6px;
+.marginBottom10 {
+  margin-bottom: 6px;
 }
 </style>
