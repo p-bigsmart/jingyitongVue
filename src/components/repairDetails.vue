@@ -45,13 +45,17 @@
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">现场图片：</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 text_right marginTop10">上传图片</div></flexboxItem>
+                    <flexboxItem>
+                        <div class="fontSize14 text_right marginTop10">
+                            <a href="javascript:;" class="file">
+                                <input type="file"  id="file" @change="fileUp($event)"  accept="image/jpeg,image/jpg,image/png,image/gif" />
+                            </a>
+                        </div>
+                    </flexboxItem>
                 </flexbox>
                 <template v-if="photoList[0].length">
-                <flexbox :gutter="0" >
-                    <!-- v-for="array in photoList" -->
-                    <!-- 这里可能要用到computed动态修改一下array的src，改变的时候就给他修改src的地址，拼接成完整的src -->
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
+                <flexbox :gutter="0"  v-for="array in photoList">
+                    <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
                 </flexbox>
                 </template>
                 <flexbox :gutter="0">
@@ -79,7 +83,20 @@
                     </flexboxItem>
                 </flexbox>
                     <div v-if="!arr.iscl" style="margin:20px 0"><x-button text="处理完成" type="primary" @click.native="tijiao(arr)"></x-button></div>
-
+                
+                <!-- 如果没有回访人姓名，那就不显示回访记录 -->
+                <template v-if="arr.hfry">
+                    <flexbox :gutter="0" >
+                    <flexboxItem ><div class="fontSize14 marginTop10"><b>回访：</b></div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">回访时间:{{arr.hfdate | formatDate}}</div></flexboxItem>
+                </flexbox>
+                <div class="hr"></div>
+                <flexbox :gutter="0" >
+                    <flexboxItem ><div class="fontSize14 marginTop10">回访人：{{arr.hfry | dataVal}}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">回方式：{{arr.hffs | dataVal}}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">满意程度：{{arr.approve | dataVal }}</div></flexboxItem>
+                </flexbox>
+                </template>
             </nav>
             <common-footer></common-footer>
         </div>
@@ -91,10 +108,10 @@
 import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom, XTextarea, Datetime, Swiper} from 'vux'
 
 import { p_alert, p_alert_error } from 'src/util/alert'
-import { postData } from 'src/util/base'
+import { postData , baseURL } from 'src/util/base'
 import commonFooter from 'src/common/footer'
 import {formatDate} from 'src/util/date'
-
+import axios from 'axios'
 
 export default{
     components:{
@@ -111,7 +128,9 @@ export default{
         XInput,
         XTextarea,
         Datetime,
-        Swiper
+        Swiper,
+        baseURL,
+        axios
     },
     data(){
         return {
@@ -123,7 +142,8 @@ export default{
             // 报修图片
             photoList:[],
             ServiceFee : '' ,
-            
+            base:'',
+            fileVal:''
         }
     },
     filters: {
@@ -155,11 +175,14 @@ export default{
             fdno:localStorage.getItem('fdno'),
             bxno:localStorage.getItem('bxno')
         }).then(res =>{
+                this.base = baseURL
+                this.base = this.base.slice(7)
                 this.photoList.push(res.data)
-                console.log(this.photoList[0].length)
+                console.log(this.photoList[0])
         }).catch(err =>{
             console.log(err)
         })
+        
     },
     methods:{
         search(){
@@ -177,8 +200,36 @@ export default{
             console.log()
             console.log()
             console.log()
+        },
+        // 图片上传
+        fileUp(e){
+            let file = e.target.files[0]
+            console.log(e.target.files[0])
+            let param = new FormData()
+            param.append('file',file, file.name)
+            param.append('code',localStorage.getItem('jinzhuma'))
+            param.append('fdno',localStorage.getItem('fdno'))
+            param.append('bxno',localStorage.getItem('bxno'))
+             console.log(param.get('file'))
+            // {
+            //     code:localStorage.getItem('jinzhuma'),
+            //     fdno:localStorage.getItem('fdno'),
+            //     bxno:localStorage.getItem('bxno')
+            // }
+            let config = {
+            headers:{'Content-Type':'multipart/form-data'}
+          };  //添加请求头
+          axios.post('/wxupfile/upload',param)
+          .then(response=>{
+            console.log(response.data);
+          }).catch(err =>{
+              console.log(err)
+          })        
+
         }
+        
     }
+    
 }
 </script>
 
@@ -218,8 +269,30 @@ text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省
     margin-bottom:6px;
 }
 .imgDiv img{
-    border:1px solid;
     width:100%;
     height:50px;
+}
+a.file {
+  width:25px;
+  height:30px;
+  line-height:30px;
+  background:url('../assets/paizhao.png') no-repeat;
+  text-align:center;
+  display:inline-block;/*具有行内元素的视觉，块级元素的属性 宽高*/
+  overflow:hidden;/*去掉的话，输入框也可以点击*/
+  position:relative;/*相对定位，为 #file 的绝对定位准备*/
+  top:5px;
+}
+a{
+  text-decoration:none;
+  color:#FFF;
+}
+#file{
+   opacity:0;/*设置此控件透明度为零，即完全透明*/
+   filter:alpha(opacity=0);/*设置此控件透明度为零，即完全透明针对IE*/
+   width:100%;
+   position:absolute;/*绝对定位，相对于 .input */
+   top:0;
+   right:0;
 }
 </style>
