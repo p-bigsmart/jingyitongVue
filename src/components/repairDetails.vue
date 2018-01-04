@@ -2,79 +2,83 @@
   <div class="height100">
       <view-box ref="viewBox" >
         <x-header>
-            <input type="text" placeholder="单号\物业\业户" v-model="searchVal" class="searchVal" />
-            <button class="searchBtn" @click="search">搜索</button>
-            <span slot="right">
-                <select >
-                    <option value="0">全部</option>
-                    <option value="1">已处理</option>
-                    <option value="2">未处理</option>
-                </select>
-                </span>
+            精易通物管助手--报修详情
         </x-header>
         <div class="content">
-            <nav >
-                <flexbox>
-                    <flexboxItem :span="7"><div class="marginTop10">报修单号：BXAB20171101</div></span></flexboxItem>
-                    <flexboxItem :span="3"><div class="text_right  marginTop10 fontSize14">业户图标</div></flexboxItem>
-                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" v-text="status"></div></flexboxItem>
+            <nav v-for="arr in allList">
+                <flexbox >
+                    <flexboxItem :span="7" ><div class="marginTop10">报修单号：{{arr.bxno}}</div></flexboxItem>
+                    <flexboxItem :span="3"><div class="text_center  marginTop10 fontSize14">
+                        <span v-if="arr.isyh">
+                            <img src="../assets/contactName.png">
+                        </span>
+                        <span v-else>
+                            <img src="../assets/house.png">
+                        </span>
+                        </div></flexboxItem>
+                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14">{{arr.iscl ? '已处理' : '未处理'}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">业户:中山市工业进出口开发有限公司</div></flexboxItem>
-                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">A座301</div></flexboxItem>
-                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">tubiao</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">业户:{{arr.wyname | dataVal}}</div></flexboxItem>
+                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">{{arr.wyno | dataVal}}</div></flexboxItem>
+                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10"><img src="../assets/GPS.png" alt=""></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">联系人：张先生13834488888</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">报修类型：A类</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">联系人：{{arr.bxry | dataVal}}{{arr.yhtel | dataVal}}</div></flexboxItem>
+                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">报修类型：{{arr.bxtype | dataVal}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">报修时间：2017-11-01 10:30</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">优先级：加急</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">报修时间：{{arr.curbxdate | formatDate}}</div></flexboxItem>
+                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">优先级：{{arr.priority ? '加急' : '普通'}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
-                    <flexboxItem><div style="font-size:14px;">门锁坏了...辅导费看来得佛挡杀佛多久饭放得开离开了(1515)</div></flexboxItem>
+                    <flexboxItem><div style="font-size:14px;">{{arr.bxxm | dataVal}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 ">派单时间:2017-11-01 10:30</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 ">派单时间:{{arr.pddate | formatDate}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 ">接单人:陈工</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 ">接单人:{{arr.wxry | dataVal}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">现场图片：</div></flexboxItem>
                     <flexboxItem><div class="fontSize14 text_right marginTop10">上传图片</div></flexboxItem>
                 </flexbox>
-                <flexbox :gutter="0">
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
+                <template v-if="photoList[0].length">
+                <flexbox :gutter="0" >
+                    <!-- v-for="array in photoList" -->
+                    <!-- 这里可能要用到computed动态修改一下array的src，改变的时候就给他修改src的地址，拼接成完整的src -->
                     <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
                 </flexbox>
+                </template>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">开工时间:2017-11-01 10:30</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">开工时间:{{arr.kgdate | formatDate}}</div></flexboxItem>
                 </flexbox>
                 <group>
-                    <x-textarea title="处理结果" placeholder="请输入处理结果"  :show-counter="false" :rows="1" autosize></x-textarea>
+                    <x-textarea title="处理结果" placeholder="请输入处理结果" text-align="right"  :show-counter="false" :readonly="arr.iscl" :rows="1" autosize :value="arr.bz | dataVal"></x-textarea>
                 </group>
                 <group>
-                    <datetime v-model="minuteListValue" placeholder='请选择处理完成时间' format="YYYY-MM-DD HH:mm"   title="完成时间"></datetime>
+                    <datetime v-model="minuteListValue" :placeholder="arr.wcdate | formatDate " :readonly="arr.iscl" format="YYYY-MM-DD HH:mm"   title="完成时间"></datetime>
                 </group>
                 <group>
-                    <x-input title="材料费" type="number"></x-input>
+                    <x-input title="材料费" type="number" :value="arr.clje ? arr.clje : '0'" :readonly="arr.iscl">
+                        <span slot="right">元</span>
+                    </x-input>
                 </group>
                 <group>
-                    <x-input title="服务费" type="number"></x-input>
+                    <x-input title="服务费" type="number"  :value="arr.wxje ? arr.wxje : '0'" :readonly="arr.iscl" v-model="ServiceFee">
+                        <span slot="right">元</span>
+                    </x-input>
                 </group>
                 <flexbox :gutter="0">
                     <flexboxItem>
-                        <h4 class="marginTop10">合计：60元</h4>
+                        <h4 class="marginTop10">合计：{{arr.totalje}}元</h4>
                     </flexboxItem>
                 </flexbox>
-                    <div style="margin-top:20px"><x-button text="处理完成" type="primary"></x-button></div>
+                    <div v-if="!arr.iscl" style="margin:20px 0"><x-button text="处理完成" type="primary" @click.native="tijiao(arr)"></x-button></div>
 
             </nav>
             <common-footer></common-footer>
@@ -89,12 +93,8 @@ import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog
 import { p_alert, p_alert_error } from 'src/util/alert'
 import { postData } from 'src/util/base'
 import commonFooter from 'src/common/footer'
+import {formatDate} from 'src/util/date'
 
-const imgList = [
-  'http://placeholder.qiniudn.com/800x300/FF3B3B/ffffff',
-  'http://placeholder.qiniudn.com/800x300/FFEF7D/ffffff',
-  'http://placeholder.qiniudn.com/800x300/8AEEB1/ffffff'
-]
 
 export default{
     components:{
@@ -118,12 +118,65 @@ export default{
             searchVal:'',
             status:'未处理',
             minuteListValue:"",
-            demo04_list: imgList,
+            // 报修详细数据
+            allList:[],
+            // 报修图片
+            photoList:[],
+            ServiceFee : '' ,
+            
         }
+    },
+    filters: {
+        formatDate(time) {
+            var date = new Date(time);
+            return formatDate(date, 'yyyy-MM-dd hh:mm');
+        },
+        dataVal(data){
+            if(data){
+                return data
+            }else{
+                return '无'
+            }
+        }
+    },
+    beforeCreate(){
+        postData('/bxtable/getDetail',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            bxno:localStorage.getItem('bxno')
+        }).then(res =>{
+            this.allList.push(res.data)
+            console.log(this.allList)
+        }).catch(err =>{
+            console.log(err)
+        })
+        postData('/wxupfile/getImage',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            bxno:localStorage.getItem('bxno')
+        }).then(res =>{
+                this.photoList.push(res.data)
+                console.log(this.photoList[0].length)
+        }).catch(err =>{
+            console.log(err)
+        })
     },
     methods:{
         search(){
             console.log(1)
+        },
+        super1(){
+            console.log(11)
+        },
+        tijiao(arr){
+            console.log(this.ServiceFee)
+            console.log()
+            console.log()
+            console.log()
+            console.log()
+            console.log()
+            console.log()
+            console.log()
         }
     }
 }

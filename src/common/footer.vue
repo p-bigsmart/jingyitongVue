@@ -1,7 +1,7 @@
 <template>
   <div style="height:53px">
       <tabbar  style="width:100%;position:absolute;left:0;bottom:0;z-index:100;height:53px">
-      <tabbar-item link="/login" badge="2">
+      <tabbar-item link="" badge="2">
        <i class="iconfont icon-biaoqian" slot="icon"></i>
         <span slot="label">待办事项</span>
       </tabbar-item>
@@ -9,7 +9,7 @@
        <i class="iconfont icon-tixing" slot="icon"></i>
         <span slot="label">公司公告</span>
       </tabbar-item>
-      <tabbar-item selected link="">
+      <tabbar-item selected link="./index">
        <i class="iconfont icon-shouye" slot="icon"></i>
         <span slot="label">首页</span>
       </tabbar-item>

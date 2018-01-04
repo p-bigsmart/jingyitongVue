@@ -21,7 +21,7 @@
                     </flexbox-item>
                     <flexbox-item>
                         <div class="flex-demo">
-                            <x-button type="warn" mini link="">切换进驻</x-button>
+                            <x-button type="warn" mini link="./stationed">切换进驻</x-button>
                         </div>
                     </flexbox-item>
                 </flexbox>
@@ -42,10 +42,10 @@
                     </group>
 
                 <div v-show="yanzhengFlag">
-                    <h1 class="p_h1">欢迎您：林先生，你已通过验证</h1>
+                    <h1 class="p_h1">欢迎您：<span>{{qiehuanName}}</span>先生，你已通过验证</h1>
                     <div class="hr"></div>
                     <group title="请选择您授权的楼盘：">
-                         <selector :options="list"  ref="valueMap"  placeholder="请选择操作人员" v-model="defaultValue"></selector>
+                         <selector :options="list" id="loupanSelect"  ref="valueMap"  :placeholder="loupanPlace" v-model="defaultValue"></selector>
                     </group>
                     
                     <group>
@@ -80,17 +80,22 @@ export default {
     Flexbox,
     FlexboxItem,
     Group,
-    Selector
+    Selector,
+    
   },
   data() {
     return {
       user: "",
       pass: "",
       yanzhengFlag: false,
-      list: [{ key: "gd", value: "广东" }, { key: "gx", value: "广西" }],
+      list: [],
       defaultValue: "",
       //   进驻企业
       tStationedEnterprises:'',
+    //   切换名字
+      qiehuanName:'',
+    //   楼盘placeholder
+      loupanPlace:'请选择操作人员'
     };
   },
   methods: {
@@ -104,11 +109,25 @@ export default {
             password:this.pass.replace(/(\s+$)/g,""),
             code:localStorage.getItem('jinzhuma')
         }).then(res =>{
+            console.log(res.data.name)
             switch(res.data.result){
                 case 0:
                     p_alert_error()
                     break;
                 case 1:
+                    this.qiehuanName = res.data.name
+                    postData('/fdset/selectListAll',{
+                        code:localStorage.getItem('jinzhuma')
+                    }).then(res =>{
+                        console.log(res)
+                        if(res.data.length){
+                            this.list.push(res.data)
+                        }else{
+                            this.loupanPlace = '此账号暂无可切换楼盘'
+                        }
+                    }).catch(err =>{
+                        console.log(err)
+                    })
                     this.yanzhengFlag = true;
                     break;
                 case 3:

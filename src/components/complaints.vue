@@ -13,38 +13,39 @@
                 </span>
         </x-header>
         <div class="content">
-            <nav >
+          <div class="content" v-for="array in listAll">
+            <nav v-for="contact in array">
                 <flexbox>
-                    <flexboxItem :span="7"><div class="marginTop10">投诉单号：BXAB20171101</div></span></flexboxItem>
-                    <flexboxItem :span="3"><div class="text_right  marginTop10 fontSize14">投诉方式:电话</div></flexboxItem>
+                    <flexboxItem :span="7"><div class="marginTop10">投诉单号：{{contact.bxno}}</div></flexboxItem>
+                    <flexboxItem :span="3"><div class="text_right  marginTop10 fontSize14">投诉方式:{{contact.tsfs}}</div></flexboxItem>
                     <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" v-text="status"></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">投诉人:中山市工业进出口开发有限公司</div></flexboxItem>
-                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">A座301</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">投诉人:{{contact.wyname}}</div></flexboxItem>
+                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">{{contact.wyno}}</div></flexboxItem>
                      <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10"><img src="../assets/GPS.png" alt=""></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem>
                         <div class="fontSize14 marginTop10">
-                            联系人：张先生13834488888 
+                            联系人：{{contact.tsry}}{{contact.yhtel}} 
                         <img style="vertical-align:middle" src="../assets/phone.png" alt="" >
                         </div>
                     </flexboxItem>
-                    <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10" style="height:28px;">接待人：小李</div></flexboxItem>
+                    <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10" style="height:28px;">接待人：{{contact.jdry}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">投诉时间：2017-11-01 10:30</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">投诉类型：A类</div></flexboxItem>
-                </flexbox>
-                <div class="hr"></div>
-                <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 ">过道有拉圾...SADFKKSFDKAKSDFKSDAFKKSDAFKKSDAFSDAF(最多显示一行)....</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">投诉时间：{{contact.curbxdate}}</div></flexboxItem>
+                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">投诉类型：{{contact.tsclass}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 ">处理负责人:陈工</div></flexboxItem>
-                    <flexboxItem :span="8"><div class="fontSize14  text_right">处理日期:2017-11-01 15：30(已处理的显示)</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 ">{{contact.tsxm}}</div></flexboxItem>
+                </flexbox>
+                <div class="hr"></div>
+                <flexbox :gutter="0">
+                    <flexboxItem><div class="fontSize14 ">处理负责人:{{contact.clry}}</div></flexboxItem>
+                    <flexboxItem :span="8"><div class="fontSize14  text_right">处理日期:{{contact.cldate}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem>
@@ -54,6 +55,7 @@
                     </flexboxItem>
                 </flexbox>
             </nav>
+          </div>
             <common-footer></common-footer>
         </div>
       </view-box>
@@ -73,7 +75,7 @@ import {
   TransferDomDirective as TransferDom
 } from "vux";
 
-import { p_alert, p_alert_error } from "src/util/alert";
+import { p_alert, p_alert_error, p_alert_hide } from "src/util/alert";
 import { postData } from "src/util/base";
 import commonFooter from "src/common/footer";
 export default {
@@ -90,10 +92,26 @@ export default {
     XDialog,
     XInput
   },
+  created(){
+    postData('/tstable/selectListAll',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            iscl:2
+    }).then(res =>{
+        if(res.data.length){
+                this.listAll.push(res.data)
+                console.log(this.listAll)
+            }else{
+                p_alert_hide('暂无数据','暂无投诉数据',function(){history.go(-1)})
+          }
+    })
+  },
   data() {
     return {
       searchVal: "",
-      status: "未处理"
+      status: "未处理",
+      // 投诉清单数组
+      listAll:[],
     };
   },
   methods: {

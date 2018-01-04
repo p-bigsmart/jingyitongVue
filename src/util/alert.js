@@ -17,3 +17,13 @@ export const p_alert_error = () => {
         })
     )
 }
+
+export const p_alert_hide = (title, content, onHide) => {
+    return (
+        AlertModule.show({
+            title: title,
+            content: content,
+            onHide: onHide
+        })
+    )
+}

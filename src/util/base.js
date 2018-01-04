@@ -2,7 +2,8 @@ import axios from 'axios'
 import qs from 'qs';
 
 // 默认端口
-axios.defaults.baseURL = 'http://192.168.1.108:8080'
+// axios.defaults.baseURL = 'http://192.168.1.108:8081'
+axios.defaults.baseURL = 'http://120.76.203.34:8081'
 
 // `transformRequest` 允许在向服务器发送前，修改请求数据
 // 只能用在 'PUT', 'POST' 和 'PATCH' 这几个请求方法

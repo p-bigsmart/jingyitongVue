@@ -20,10 +20,13 @@
     @on-cancel="onCancel"
     @on-submit="onSubmit"
     ref="search"></search>
-       <swiper auto  style="width:100%;margin-top:10px" height="200px" dots-class="custom-bottom" dots-position="center">
+       <swiper auto  style="width:100%;margin-top:10px" height="200px" dots-class="custom-bottom" dots-position="center" v-show="swiperDis">
         <swiper-item><div id="myChart" :style="{width: '100%', height: '200px'}"></div></swiper-item>
         <swiper-item><div id="myChart2" :style="{width: '100%', height: '200px'}"></div></swiper-item>
        </swiper>
+       <div id="null" v-show="nullDis">
+         暂无数据
+       </div>
       <grid  :cols="3">
       <grid-item label="合同审批" link="./contractApproval">
         <img slot="icon" src="../assets/shengpi.png">
@@ -132,7 +135,9 @@ export default {
       // 出租楼层名称
       aOccupancyName: [],
       // 出租率
-      aOccupancyRate: []
+      aOccupancyRate: [],
+      swiperDis:true,
+      nullDis:false
     };
   },
   created() {
@@ -173,6 +178,12 @@ export default {
         if (name.status != 200 || colle.status != 200 || rental.status != 200) {
           p_alert_error();
         } else {
+          if(!name.data.value){
+            this.swiperDis = false;
+            this.nullDis = true
+          }else{
+            this.swiperDis = true
+            this.nullDis = false
           // 轮播图title
           this.lunboTitle = name.data.value;
           // 今日收款数
@@ -194,6 +205,7 @@ export default {
           this.aaa();
           // 将楼盘编号写入local
           localStorage.setItem("fdno", name.data.key);
+          }
         }
       })
     );
@@ -288,9 +300,10 @@ export default {
     },
     quit(){
       // 换了环境，也要修改这个地址
-      location.href = 'http://192.168.1.108:8080/logout.action'
       localStorage.removeItem('user')
       localStorage.removeItem('pass')
+      this.$router.push('./login')
+      
     }
   }
 };
@@ -307,7 +320,7 @@ function getResult(val) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 @import "../css/reset.less";
 
 .popup0 {
@@ -317,5 +330,11 @@ function getResult(val) {
 .popup1 {
   width: 100%;
   height: 100%;
+}
+#null{
+  text-align: center;
+  height: 150px;
+  line-height:150px;
+  font-size:22px;
 }
 </style>

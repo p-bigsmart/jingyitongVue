@@ -23,14 +23,19 @@ export default {
     let interval = setInterval(()=>{
         this.dataTime--;
         if(this.dataTime == 0){
-            this.$router.push('./login')
+            this.tiaoguo()
+            console.log(1)
             clearInterval(interval)
         }
     },1000);
   },
   methods:{
       tiaoguo(){
-          this.$router.push('./login')
+          if(localStorage.getItem('user') != null && localStorage.getItem('pass') != null){
+              this.$router.push('./index')
+          }else{
+              this.$router.push('./login')
+          }
       }
   }
 }
