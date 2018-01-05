@@ -48,13 +48,16 @@
                     <flexboxItem>
                         <div class="fontSize14 text_right marginTop10">
                             <a href="javascript:;" class="file">
+                                <!-- 这个是上传 -->
                                 <input type="file"  id="file" @change="fileUp($event)"  accept="image/jpeg,image/jpg,image/png,image/gif" />
                             </a>
                         </div>
                     </flexboxItem>
                 </flexbox>
                 <template v-if="photoList[0].length">
-                <flexbox :gutter="0"  v-for="array in photoList">
+                <flexbox :gutter="0" v-if="array[0].filename"  v-for="array in photoList">
+                    <!-- 我上面有一个循环 然后这里又需要一个循环 他的图片不是在一个请求里面的  现在就给我警告了... -->
+                    <!-- 这个是图片循环 -->
                     <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
                 </flexbox>
                 </template>
@@ -112,6 +115,7 @@ import { postData , baseURL } from 'src/util/base'
 import commonFooter from 'src/common/footer'
 import {formatDate} from 'src/util/date'
 import axios from 'axios'
+import Exif from 'exif-js'  
 
 export default{
     components:{
@@ -130,7 +134,8 @@ export default{
         Datetime,
         Swiper,
         baseURL,
-        axios
+        axios,
+        Exif
     },
     data(){
         return {
@@ -224,7 +229,7 @@ export default{
             console.log(response.data);
           }).catch(err =>{
               console.log(err)
-          })        
+          })
 
         }
         
