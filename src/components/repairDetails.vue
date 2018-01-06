@@ -5,7 +5,7 @@
             精易通物管助手--报修详情
         </x-header>
         <div class="content">
-            <nav v-for="arr in allList">
+            <nav :key="arr.wyname" v-for="arr in allList">
                 <flexbox >
                     <flexboxItem :span="7" ><div class="marginTop10">报修单号：{{arr.bxno}}</div></flexboxItem>
                     <flexboxItem :span="3"><div class="text_center  marginTop10 fontSize14">
@@ -48,16 +48,13 @@
                     <flexboxItem>
                         <div class="fontSize14 text_right marginTop10">
                             <a href="javascript:;" class="file">
-                                <!-- 这个是上传 -->
                                 <input type="file"  id="file" @change="fileUp($event)"  accept="image/jpeg,image/jpg,image/png,image/gif" />
                             </a>
                         </div>
                     </flexboxItem>
                 </flexbox>
                 <template v-if="photoList[0].length">
-                <flexbox :gutter="0" v-if="array[0].filename"  v-for="array in photoList">
-                    <!-- 我上面有一个循环 然后这里又需要一个循环 他的图片不是在一个请求里面的  现在就给我警告了... -->
-                    <!-- 这个是图片循环 -->
+                <flexbox :gutter="0" :key="array[0].filename"  v-for="array in photoList">>
                     <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
                 </flexbox>
                 </template>
