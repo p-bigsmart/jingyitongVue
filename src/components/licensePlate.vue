@@ -5,12 +5,12 @@
           <div class="content ">
             <div class="padding15">
                 <group>
-                <x-input placeholder="请输入车牌号">
+                <x-input placeholder="请输入车牌号" v-model="chepaiNum">
                     <img slot="label" style="padding-right:10px;display:block;" src="../assets/user.png" width="24" height="24">
                 </x-input>
             </group>
             <div class="marginTop10">
-                <x-button type="primary">查询</x-button>
+                <x-button type="primary" @click.native="search">查询</x-button>
             </div>
                 <div class="hr"></div>
                 <table>
@@ -58,6 +58,25 @@ export default {
       p_alert,
       p_alert_error
     },
+    data(){
+        return {
+            // 车牌号
+            chepaiNum,
+        }
+    },
+    methods:{
+        // 点击查询
+        search(){
+            postData('/arrear/queryLicensePlate',{
+                code : localStorage.getItem('jinzhuma'),
+                drno : this.chepaiNum
+            }).then(res =>{
+                console.log(res)
+            }).catch(err =>{
+                console.log(err)
+            })
+        }
+    }
 }
 </script>
 

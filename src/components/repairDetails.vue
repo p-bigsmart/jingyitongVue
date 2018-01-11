@@ -48,7 +48,7 @@
                     <flexboxItem>
                         <div class="fontSize14 text_right marginTop10">
                             <a href="javascript:;" class="file">
-                                <input type="file"  id="file" @change="fileUp($event)"  accept="image/jpeg,image/jpg,image/png,image/gif" />
+                                <input type="file" ref="upImg"  id="file" @change="fileUp($event)"  />
                             </a>
                         </div>
                     </flexboxItem>
@@ -143,9 +143,11 @@ export default{
             allList:[],
             // 报修图片
             photoList:[],
+            // 服务费
             ServiceFee : '' ,
             base:'',
-            fileVal:''
+            fileVal:'',
+            ImgHttp: ''
         }
     },
     filters: {
@@ -194,36 +196,19 @@ export default{
             console.log(11)
         },
         tijiao(arr){
-            console.log(this.ServiceFee)
-            console.log()
-            console.log()
-            console.log()
-            console.log()
-            console.log()
-            console.log()
-            console.log()
+            console.log(this.ServiceFee,'服务费')
+            
         },
         // 图片上传
         fileUp(e){
-            let file = e.target.files[0]
-            console.log(e.target.files[0])
+            let upImg = this.$refs.upImg[0].files[0]
             let param = new FormData()
-            param.append('file',file, file.name)
-            param.append('code',localStorage.getItem('jinzhuma'))
-            param.append('fdno',localStorage.getItem('fdno'))
-            param.append('bxno',localStorage.getItem('bxno'))
-             console.log(param.get('file'))
-            // {
-            //     code:localStorage.getItem('jinzhuma'),
-            //     fdno:localStorage.getItem('fdno'),
-            //     bxno:localStorage.getItem('bxno')
-            // }
-            let config = {
-            headers:{'Content-Type':'multipart/form-data'}
-          };  //添加请求头
-          axios.post('/wxupfile/upload',param)
+            param.append('file', upImg)
+          axios.post('/wxupfile/upload', param)
           .then(response=>{
-            console.log(response.data);
+            //   http://120.76.203.34:8081/tsupfile/5e015048.png
+            console.log(response.data, '图片上传成功');
+            this.ImgHttp = baseURL+ '/tsupfile/' +response.data.image
           }).catch(err =>{
               console.log(err)
           })

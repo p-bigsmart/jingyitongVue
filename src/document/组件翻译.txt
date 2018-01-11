@@ -14,3 +14,4 @@ repairProcessing--报修
 repairDetails--报修详情
 scanCodeReading--扫码抄表
 scanCodeReadingDetails--扫码抄表详情
+arrearsInquiries--欠费查询

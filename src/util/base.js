@@ -10,7 +10,12 @@ export const baseURL = axios.defaults.baseURL
     // 只能用在 'PUT', 'POST' 和 'PATCH' 这几个请求方法
     // 后面数组中的函数必须返回一个字符串，或 ArrayBuffer，或 Stream
 axios.defaults.transformRequest = [(data) => {
-    return qs.stringify(data)
+    console.log(data, '_____')
+    if (data.__proto__.append) {
+        return data
+    } else {
+        return qs.stringify(data)
+    }
 }]
 
 // 请求超时(0表示无超时时间)
@@ -19,9 +24,7 @@ axios.defaults.timeout = 20000;
 
 axios.defaults.withCredentials = true;
 
-
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8;Accept-Language:zh-CN,zh;q=0.8';
-
 export const getData = (url, param) => {
     return (
         axios.get(`${url}`)
@@ -30,6 +33,12 @@ export const getData = (url, param) => {
 
 export const postData = (url, param) => {
     return (
+        // axios.create({
+        //     url: url,
+        //     data: param,
+        //     method: 'post',
+        //     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8;Accept-Language:zh-CN,zh;q=0.8' }
+        // })
         axios.post(`${url}`, param)
     )
 }
