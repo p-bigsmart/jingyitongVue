@@ -1,30 +1,28 @@
 <template>
   <div>
-        <x-header title="精易通物管助手--欠费查询"></x-header>
-        <div class="content">
-          <group>
-              <datetime v-model="dateTime" placeholder="请选择截止时间"  format="YYYY-MM-DD HH:mm"   title="截止时间"></datetime>
-          </group>
-          <group title="精确搜索" class="weui-cells_form">
-            <x-input placeholder="物业\业户\招牌或简称" class="weui-vcode">
-              <x-button slot="right" type="primary" mini>查找</x-button>
+       <x-header title="精易通物管助手--抄表清单"></x-header>
+       <div class="content">
+           <template>
+               <group title="精确搜索" class="weui-cells_form">
+            <x-input placeholder="物业\业户\抄表号" class="weui-vcode">
+              <x-button slot="right" type="primary" mini>搜索</x-button>
             </x-input>
         </group>
-       <div class="marginTop10">
-         
-          <flexbox>
-          <flexboxItem :span="9"></flexboxItem>
-          <flexboxItem :span="3"><x-button type="primary" link="./arrearsDetails" mini>详情</x-button></flexboxItem>
-        </flexbox>
-       </div>
-      <div>
-        <div class="marginTop10" cellspacing="0">
+           </template>
+           <template>
+               <group>
+                   <datetime v-model="dateVal" format="YYYY-MM-DD HH:mm" title="出单月份：" placeholder="请选择出单月份"></datetime>
+               </group>
+           </template>
+        <template>
+             <div class="marginTop10" cellspacing="0">
           <table width="100%">
           <thead>
             <tr>
-              <td>业户名称</td>
-              <td>物业名称</td>
-              <td>欠费金额</td>
+              <td>业户</td>
+              <td>物业</td>
+              <td>抄表号</td>
+              <td>本期读数</td>
             </tr>
           </thead>
           <tbody>
@@ -32,22 +30,26 @@
               <td>张三</td>
               <td>A座401</td>
               <td>1000</td>
+              <td>1000</td>
             </tr>
             <tr>
               <td>张三</td>
               <td>A座401</td>
               <td>1000</td>
+              <td>1000</td>
             </tr>
           </tbody>
         </table>
         </div>
-      </div>
-        </div>
+        </template>
+
+       </div>
   </div>
 </template>
 
 <script>
-import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom, XTextarea, Datetime, Swiper} from 'vux'
+
+import {XButton, XHeader, Radio, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom, XTextarea, Datetime, Swiper} from 'vux'
 
 import { p_alert, p_alert_error } from 'src/util/alert'
 import { postData , baseURL } from 'src/util/base'
@@ -64,6 +66,7 @@ export default {
         p_alert_error,
         commonFooter,
         Selector,
+        Radio,
         FlexboxItem,
         XDialog,
         XInput,
@@ -79,15 +82,17 @@ export default {
         }
     },
     data(){
-      return {
-        dateTime:''
-      }
+        return{
+            dateVal:''
+        }
     }
 }
 </script>
 
 <style scoped>
-  table tr td{
+
+
+table tr td{
     text-align: center;
   }
   table {
@@ -104,5 +109,4 @@ table td {
   table tbody  tr:nth-child(odd){
     background:#e4e4e4;
   }
-  
 </style>

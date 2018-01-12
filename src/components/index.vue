@@ -49,7 +49,7 @@
       <grid-item label='扫码抄表' link="./scanCodeReading">
         <img slot="icon" src="../assets/saoma.png">
       </grid-item>
-      <grid-item label='欠费查询' link="">
+      <grid-item label='欠费查询' link="./arrearsInquiries">
         <img slot="icon" src="../assets/qianfei.png">
       </grid-item>
       <grid-item label='现场缴费'>

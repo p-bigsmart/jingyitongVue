@@ -1,25 +1,60 @@
 <template>
   <div>
-       <x-header title="精易通物管助手--车牌查询"></x-header>
+       <x-header title="精易通物管助手--欠费详情"></x-header>
         <div class="content ">
-          <group>
-              <datetime v-model="DateTime" placeholder="请选择截止时间"  format="YYYY-MM-DD HH:mm"   title="截止时间"></datetime>
-          </group>
           <template >
               <div class="title padding10">
-                  
-              <p>业户：中山职业学院</p>
-              <p>联系人：张三</p>
-              <p>联系手机：13812345678 <img src="../assets/phone.png"></p>
+                <p>业户：中山职业学院</p>
+                <p>联系人：张三</p>
+                <p>联系手机：13812345678 <img src="../assets/phone.png"></p>
               </div>
           </template>
-          
-        </div>
-        <template>
+          <template>
             <group>
-                <selector title="title" v-model="value"></selector>
+                <selector title="物业楼盘：" v-model="value" :options="list"></selector>
             </group>
           </template>
+          <template>
+              <group title="费用详情">
+                  <table width="100%">
+                      <thead>
+                          <tr>
+                            <td>所属月份</td>
+                            <td>物业名称</td>
+                            <td>项目名称</td>
+                            <td>应收金额</td>
+                            <td><input type="checkbox" /></td>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                            <td>2017.9</td>
+                            <td>A座401</td>
+                            <td>租金</td>
+                            <td>1000</td>
+                            <td><input type="checkbox" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </group>
+          </template>
+          <template>
+              <group title="合计">
+                  <div class="padding10">
+                      <flexbox>
+                  <flexbox-item :span="6">应收合计：2350元</flexbox-item>
+                  <flexbox-item ><div class="textRight">本欠收款：0元</div></flexbox-item>
+                </flexbox>
+                  </div>
+              </group>
+          </template>
+          <template>
+            <div class="padding10">
+                <x-button class="button" @click.native="shoukuan">扫描收款</x-button>
+            </div>
+          </template>
+        </div>
+        <commonFooter></commonFooter>
   </div>
 </template>
 
@@ -56,6 +91,18 @@ export default {
             return formatDate(date, 'yyyy-MM-dd');
         }
     },
+    data(){
+        return {
+            list:[{key: 'gd', value: '广东'}, {key: 'gx', value: '广西'}],
+            value:''
+        }
+    },
+    methods:{
+        // 点击收款
+        shoukuan(){
+
+        }
+    }
 }
 </script>
 
@@ -67,7 +114,12 @@ export default {
     .title img{
         vertical-align: middle;
     }
-    .padding10{
-        padding:10px;
+    
+    table td{
+        text-align: center
     }
+    .textRight{
+        text-align: right;
+    }
+    
 </style>
