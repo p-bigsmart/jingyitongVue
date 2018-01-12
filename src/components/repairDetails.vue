@@ -5,7 +5,7 @@
             精易通物管助手--报修详情
         </x-header>
         <div class="content">
-            <nav v-for="arr in allList">
+            <nav :key="arr.wyname" v-for="arr in allList">
                 <flexbox >
                     <flexboxItem :span="7" ><div class="marginTop10">报修单号：{{arr.bxno}}</div></flexboxItem>
                     <flexboxItem :span="3"><div class="text_center  marginTop10 fontSize14">
@@ -48,18 +48,20 @@
                     <flexboxItem>
                         <div class="fontSize14 text_right marginTop10">
                             <a href="javascript:;" class="file">
-                                <!-- 这个是上传 -->
-                                <input type="file"  id="file" @change="fileUp($event)"  accept="image/jpeg,image/jpg,image/png,image/gif" />
+                                <input type="file" ref="upImg"  id="file" @change="fileUp($event)"  />
                             </a>
                         </div>
                     </flexboxItem>
                 </flexbox>
                 <template v-if="photoList[0].length">
-                <flexbox :gutter="0" v-if="array[0].filename"  v-for="array in photoList">
-                    <!-- 我上面有一个循环 然后这里又需要一个循环 他的图片不是在一个请求里面的  现在就给我警告了... -->
-                    <!-- 这个是图片循环 -->
+<<<<<<< HEAD
+                <!-- <flexbox :gutter="0" v-if="array[0].filename"  v-for="array in photoList">
+                    
+=======
+                <flexbox :gutter="0" :key="array[0].filename"  v-for="array in photoList">>
+>>>>>>> 91d4449c4976a1c049b11374cd5f030a89213d05
                     <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
-                </flexbox>
+                </flexbox> -->
                 </template>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">开工时间:{{arr.kgdate | formatDate}}</div></flexboxItem>
@@ -146,9 +148,11 @@ export default{
             allList:[],
             // 报修图片
             photoList:[],
+            // 服务费
             ServiceFee : '' ,
             base:'',
-            fileVal:''
+            fileVal:'',
+            ImgHttp: ''
         }
     },
     filters: {
@@ -197,36 +201,19 @@ export default{
             console.log(11)
         },
         tijiao(arr){
-            console.log(this.ServiceFee)
-            console.log()
-            console.log()
-            console.log()
-            console.log()
-            console.log()
-            console.log()
-            console.log()
+            console.log(this.ServiceFee,'服务费')
+            
         },
         // 图片上传
         fileUp(e){
-            let file = e.target.files[0]
-            console.log(e.target.files[0])
+            let upImg = this.$refs.upImg[0].files[0]
             let param = new FormData()
-            param.append('file',file, file.name)
-            param.append('code',localStorage.getItem('jinzhuma'))
-            param.append('fdno',localStorage.getItem('fdno'))
-            param.append('bxno',localStorage.getItem('bxno'))
-             console.log(param.get('file'))
-            // {
-            //     code:localStorage.getItem('jinzhuma'),
-            //     fdno:localStorage.getItem('fdno'),
-            //     bxno:localStorage.getItem('bxno')
-            // }
-            let config = {
-            headers:{'Content-Type':'multipart/form-data'}
-          };  //添加请求头
-          axios.post('/wxupfile/upload',param)
+            param.append('file', upImg)
+          axios.post('/wxupfile/upload', param)
           .then(response=>{
-            console.log(response.data);
+            //   http://120.76.203.34:8081/tsupfile/5e015048.png
+            console.log(response.data, '图片上传成功');
+            this.ImgHttp = baseURL+ '/tsupfile/' +response.data.image
           }).catch(err =>{
               console.log(err)
           })

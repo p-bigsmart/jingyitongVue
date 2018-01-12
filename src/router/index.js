@@ -15,6 +15,11 @@ import RepairDetails from 'src/components/repairDetails'
 import LicensePlate from 'src/components/licensePlate'
 import ScanCodeReading from 'src/components/scanCodeReading'
 import Count from 'src/components/count'
+import ArrearsInquiries from 'src/components/arrearsInquiries'
+import ArrearsDetails from 'src/components/arrearsDetails'
+import ScanCodeCollection from 'src/components/scanCodeCollection'
+import MeterReadingList from 'src/components/meterReadingList'
+import MeterReadingDetails from 'src/components/meterReadingDetails'
 
 Vue.use(Router)
 
@@ -93,6 +98,31 @@ export default new Router({
             path: '/scanCodeReading',
             name: 'scanCodeReading',
             component: ScanCodeReading
+        },
+        {
+            path: '/arrearsInquiries',
+            name: 'arrearsInquiries',
+            component: ArrearsInquiries
+        },
+        {
+            path: '/arrearsDetails',
+            name: 'arrearsDetails',
+            component: ArrearsDetails
+        },
+        {
+            path: '/scanCodeCollection',
+            name: 'scanCodeCollection',
+            component: ScanCodeCollection
+        },
+        {
+            path: '/meterReadingList',
+            name: 'meterReadingList',
+            component: MeterReadingList
+        },
+        {
+            path: '/meterReadingDetails',
+            name: 'meterReadingDetails',
+            component: MeterReadingDetails
         }
     ]
 })

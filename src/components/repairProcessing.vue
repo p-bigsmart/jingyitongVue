@@ -5,15 +5,15 @@
             <input type="text" placeholder="单号\物业\业户" v-model="searchVal" class="searchVal" />
             <button class="searchBtn" @click="search">搜索</button>
             <span slot="right">
-                <select >
-                    <option value="0">全部</option>
+                <select @change="selectChange" ref="selectValue">
+                    <option value="2">全部</option>
                     <option value="1">已处理</option>
-                    <option value="2">未处理</option>
+                    <option value="0">未处理</option>
                 </select>
                 </span>
         </x-header>
-          <div class="content" v-for="array in listAll">
-            <nav v-for="contact in array">
+          <div class="content" :key="array.bxdate" v-for="array in listAll">
+            <nav :key="contact.bxno" v-for="contact in array">
                 <flexbox>
                     <flexboxItem :span="7"><div class="marginTop10 fontSize14">报修单号：{{contact.bxno}}</div></flexboxItem>
                     <!-- {{contact.isyh ? <img src="../assets/contactName.png"> : <img src="../assets/house.png">}}</div> -->
@@ -94,6 +94,7 @@ export default{
     },
     data(){
         return {
+            // 默认等于2(全部)
             searchVal:'',
             status:'未处理',
             // 报修清单数组
@@ -119,11 +120,30 @@ export default{
   },
     methods:{
         search(){
-            console.log(1)
+            console.log(this.selectValue)
+            postData('/bxtable/search',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            iscl:this.selectValue ? this.selectValue : 2,
+            keyword:this.searchVal
+            }).then(res =>{
+                this.listAll = []
+                this.listAll.push(res.data)
+                console.log(this.listAll[0])
+                if(!this.listAll.length){
+                    p_alert('无此记录','暂无此记录！')
+                }
+            }).catch(err =>{
+                console.log(err)
+            })
         },
         details(bxno){
             // 获取到单号 传到前端数据库中
             localStorage.setItem('bxno',bxno)
+        },
+        selectChange(ele){
+            this.selectValue = ele.target.value
+            
         }
     }
 }
