@@ -54,14 +54,7 @@
                     </flexboxItem>
                 </flexbox>
                 <template v-if="photoList[0].length">
-<<<<<<< HEAD
-                <!-- <flexbox :gutter="0" v-if="array[0].filename"  v-for="array in photoList">
-                    
-=======
-                <flexbox :gutter="0" :key="array[0].filename"  v-for="array in photoList">>
->>>>>>> 91d4449c4976a1c049b11374cd5f030a89213d05
-                    <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
-                </flexbox> -->
+                
                 </template>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">开工时间:{{arr.kgdate | formatDate}}</div></flexboxItem>
