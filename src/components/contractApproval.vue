@@ -53,7 +53,7 @@
                 
             </nav>
             <div v-transfer-dom>
-            <x-dialog v-model="showScrollBox" class="dialog-demo" mask-z-index="10">
+            <x-dialog v-model="showScrollBox" class="dialog-demo"  hide-on-blur>
                 <h3 class="dialog-title marginTop10" v-text="alertTitle"></h3>
                 <div class="hr"></div>
                 <!-- 点击时候要获取到河东编号 然后赋值过来 -->
@@ -72,7 +72,6 @@
                     </group>
                     <div style="margin-top:20px"><x-button :text="alertBtnValue" type="primary" @click.native="alertTijiao()"></x-button></div>
                 </div>
-                
             </x-dialog>
             </div>
             
@@ -300,5 +299,9 @@ text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省
 .BtnDiv > *{
     display: inline;
 }
+.vux-close {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
 </style>
 

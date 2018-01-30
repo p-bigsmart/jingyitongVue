@@ -5,42 +5,48 @@
           <group>
               <datetime v-model="dateTime" placeholder="请选择截止时间"  format="YYYY-MM-DD HH:mm"   title="截止时间"></datetime>
           </group>
-          <group title="精确搜索" class="weui-cells_form">
-            <x-input placeholder="物业\业户\招牌或简称" class="weui-vcode">
-              <x-button slot="right" type="primary" mini>查找</x-button>
+          <group title="单击一行查看详细信息" class="weui-cells_form">
+            <x-input placeholder="物业\业户\招牌或简称" class="weui-vcode" v-model="wuyeNum">
+              <x-button slot="right" type="primary" mini @click.native="search">查找</x-button>
             </x-input>
         </group>
        <div class="marginTop10">
          
-          <flexbox>
-          <flexboxItem :span="9"></flexboxItem>
-          <flexboxItem :span="3"><x-button type="primary" link="./arrearsDetails" mini>详情</x-button></flexboxItem>
-        </flexbox>
+          <!-- <flexbox>
+          <flexboxItem :span="9">&nbsp;</flexboxItem>
+          <flexboxItem :span="2"><x-button type="primary" link="./arrearsDetails" mini>详情</x-button></flexboxItem>
+        </flexbox> -->
        </div>
       <div>
+        <group title="精确搜索">
         <div class="marginTop10" cellspacing="0">
-          <table width="100%">
-          <thead>
-            <tr>
-              <td>业户名称</td>
-              <td>物业名称</td>
-              <td>欠费金额</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>张三</td>
-              <td>A座401</td>
-              <td>1000</td>
-            </tr>
-            <tr>
-              <td>张三</td>
-              <td>A座401</td>
-              <td>1000</td>
-            </tr>
-          </tbody>
-        </table>
+            <table width="100%">
+            <thead>
+              <tr>
+                <td>业户名称</td>
+                <td>物业名称</td>
+                <td>欠费金额</td>
+              </tr>
+            </thead>
+            <tbody>
+             
+             <template v-if="dataFlag" v-for="item in allList">
+                <tr :key="list.yhno" v-for="list in item" @click="show(list.yhno)">
+                <td>{{list.yhname}}</td>
+                <td>{{list.wyname}}</td>
+                <td>{{list.yhno}}</td>
+              </tr>
+              </template>
+              <template v-else>
+                  <tr colspan='3'>
+                    <td colspan='3'>暂无数据</td>
+                  </tr>
+              </template>
+            </tbody>
+              
+          </table>
         </div>
+        </group>
       </div>
         </div>
   </div>
@@ -52,7 +58,6 @@ import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog
 import { p_alert, p_alert_error } from 'src/util/alert'
 import { postData , baseURL } from 'src/util/base'
 import commonFooter from 'src/common/footer'
-import {formatDate} from 'src/util/date'
 
 export default {
   components:{
@@ -70,17 +75,56 @@ export default {
         XTextarea,
         Datetime,
         Swiper,
-        baseURL
+        baseURL,
+        postData
   },
-  filters: {
-        formatDate(time) {
-            var date = new Date(time);
-            return formatDate(date, 'yyyy-MM-dd');
-        }
-    },
     data(){
       return {
-        dateTime:''
+        dateTime:'',
+        dataFlag:'',
+        allList:[],
+        wuyeNum:''
+      }
+    },
+    beforeCreate(){
+      postData('/arrear/selectArrearList',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+      }).then(res =>{
+        console.log(res.data.length)
+        if(res.data.length){
+          this.dataFlag = true
+          this.allList.push(res.data)
+          console.log(this.allList)
+        }else{
+          this.dataFlag = false
+        }
+        console.log(this.dataFlag)
+      })
+    },
+    methods:{
+      search(){
+        if(!this.dateTime){
+          p_alert('未填写完整','请选择截止时间')
+          return false
+        }else if(!this.wuyeNum){
+          p_alert('未填写完整','请输入关键字')
+          return false
+        }else{
+          postData('/arrear/search',{
+            code : localStorage.getItem('jinzhuma'),
+            fdno : localStorage.getItem('fdno'),
+            closingData : this.dateTime,
+            keyword : this.wuyeNum
+          }).then(res =>{
+            console.log(res)
+          }).catch(err =>{
+            p_alert_error()
+          })
+        }
+      },
+      show(yhno){
+        console.log(yhno)
       }
     }
 }
