@@ -54,7 +54,7 @@
                     </flexboxItem>
                 </flexbox>
                 <template v-if="photoList[0].length">
-                <flexbox :gutter="0" :key="array[0].filename"  v-for="array in photoList">>
+                <flexbox :gutter="0" :key="array[0].filename"  v-for="array in photoList">
                     <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
                 </flexbox>
                 </template>
@@ -96,6 +96,7 @@
                     <flexboxItem><div class="fontSize14 text_right marginTop10">回方式：{{arr.hffs | dataVal}}</div></flexboxItem>
                     <flexboxItem><div class="fontSize14 text_right marginTop10">满意程度：{{arr.approve | dataVal }}</div></flexboxItem>
                 </flexbox>
+                <div class="marginTop10"></div>
                 </template>
             </nav>
             <common-footer></common-footer>
@@ -199,7 +200,7 @@ export default{
             console.log(this.ServiceFee,'服务费')
             
         },
-        // 图片上传
+        // 图片上传 
         fileUp(e){
             let upImg = this.$refs.upImg[0].files[0]
             let param = new FormData()

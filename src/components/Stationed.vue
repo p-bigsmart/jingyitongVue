@@ -167,12 +167,26 @@ export default {
                     p_alert_error()
                 }else if(res.data == 1){
                     // 将搜索框的进驻码写入local 
-                     localStorage.setItem('jinzhuma',this.jinzhuma)
+                    console.log(this.user)
+                    localStorage.setItem('jinzhuma',this.jinzhuma)
+                    localStorage.setItem('user',this.user)
+                    localStorage.setItem('pass',this.pass)
+                    
                     AlertModule.show({
                         title: '进驻成功',
-                        content: '点击确认跳转到登录',
+                        content: '点击确认跳转到首页',
                         onHide (){
-                            that.$router.push('./login')
+                            var params = {
+                        username : localStorage.getItem('user'),
+                        password : localStorage.getItem('pass'),
+                        code : localStorage.getItem('jinzhuma'),
+                    }
+                            postData('login.action',params)
+                            .then(res =>{
+                                    that.$router.push('./index')
+                            }).catch(err =>{
+                                console.log(err)
+                            })
                         }
                     })
                 }else if(res.data == 2){
@@ -204,7 +218,7 @@ export default {
 
                 if(this.disabledCode){
                       this.random = Math.floor(Math.random() * 100 + 1)
-            //   console.log("获取随机数"+this.random)
+            //   console.log("获取随机数"+ xthis.random)
                     postData('/public/getIdentifyingCode',{
                         phone : this.phoneNum.replace(/\s+/g,""),
                         type : 'binding',
@@ -235,8 +249,6 @@ export default {
                       })
                    
                 }
-
-                
             }else{
                 p_alert('请输入手机号','手机号不能为空.')
             }

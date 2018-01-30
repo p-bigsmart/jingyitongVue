@@ -12,7 +12,6 @@
                 </select>
                 </span>
         </x-header>
-        <div class="content">
           <div class="content" v-for="array in listAll">
             <nav v-for="contact in array">
                 <flexbox>
@@ -57,7 +56,6 @@
             </nav>
           </div>
             <common-footer></common-footer>
-        </div>
       </view-box>
   </div>
 </template>

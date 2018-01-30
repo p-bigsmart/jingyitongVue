@@ -82,6 +82,7 @@ import commonFooter from "src/common/footer";
 import axios from "axios";
 import { postData, allData } from "src/util/base";
 import { p_alert, p_alert_error } from "src/util/alert";
+import Vue from 'vue'
 export default {
   components: {
     CellFormPreview,
@@ -100,7 +101,8 @@ export default {
     postData,
     allData,
     p_alert,
-    p_alert_error
+    p_alert_error,
+    Vue
   },
   data() {
     return {
@@ -141,6 +143,7 @@ export default {
     };
   },
   created() {
+    
     // 获取楼盘名称
     function getbuildingName() {
       return axios.post("/fdset/getBuildingName", {

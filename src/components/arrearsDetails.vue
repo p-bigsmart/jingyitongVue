@@ -83,7 +83,8 @@ export default {
         XTextarea,
         Datetime,
         Swiper,
-        baseURL
+        baseURL,
+        postData
   },
   filters: {
         formatDate(time) {
@@ -96,6 +97,11 @@ export default {
             list:[{key: 'gd', value: '广东'}, {key: 'gx', value: '广西'}],
             value:''
         }
+    },
+    created(){
+        postData('/arrear/selectArrearDetail',{
+
+        })
     },
     methods:{
         // 点击收款
