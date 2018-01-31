@@ -2,16 +2,17 @@
   <div>
        <x-header title="精易通物管助手--欠费详情"></x-header>
         <div class="content ">
-          <template >
+                
+          <template  v-for="item in allList">
               <div class="title padding10">
-                <p>业户：中山职业学院</p>
-                <p>联系人：张三</p>
-                <p>联系手机：13812345678 <img src="../assets/phone.png"></p>
+                <p>业户：{{item.yhname}}</p>
+                <p>联系人：{{item.lxr}}</p>
+                <p>联系手机：{{item.mobile}} <img src="../assets/phone.png"></p>
               </div>
           </template>
           <template>
             <group>
-                <selector title="物业楼盘：" v-model="value" :options="list"></selector>
+                <selector title="物业楼盘：" placeholder="请选择物业楼盘" v-model="value" :options="list"></selector>
             </group>
           </template>
           <template>
@@ -23,17 +24,19 @@
                             <td>物业名称</td>
                             <td>项目名称</td>
                             <td>应收金额</td>
-                            <td><input type="checkbox" /></td>
+                            <td><input type="checkbox" v-model="checked" @click="checkAll"/></td>
                           </tr>
                       </thead>
                       <tbody>
-                          <tr>
-                            <td>2017.9</td>
-                            <td>A座401</td>
-                            <td>租金</td>
-                            <td>1000</td>
-                            <td><input type="checkbox" /></td>
-                          </tr>
+                          <template v-for="item in allList2">
+                            <tr>
+                                <td>{{item.djDate}}</td>
+                                <td>{{item.wyname}}</td>
+                                <td>{{item.xmname}}</td>
+                                <td>{{item.wsje}}</td>
+                                <td><input type="checkbox" v-model="checkedBox" :value="item.wsje" @change="check(value)"/></td>
+                            </tr>
+                          </template>
                       </tbody>
                   </table>
               </group>
@@ -42,8 +45,8 @@
               <group title="合计">
                   <div class="padding10">
                       <flexbox>
-                  <flexbox-item :span="6">应收合计：2350元</flexbox-item>
-                  <flexbox-item ><div class="textRight">本欠收款：0元</div></flexbox-item>
+                  <flexbox-item :span="6">应收合计：{{this.allMoney}}元</flexbox-item>
+                  <flexbox-item ><div class="textRight">本次收款：0元</div></flexbox-item>
                 </flexbox>
                   </div>
               </group>
@@ -94,19 +97,66 @@ export default {
     },
     data(){
         return {
-            list:[{key: 'gd', value: '广东'}, {key: 'gx', value: '广西'}],
-            value:''
+            list:[{}],
+            value:'',
+            /* 接收到的数组 */
+            allList:[],
+            allList2:[],
+            allMoney:0,
+            checked:false,
+            checkedBox:[]
         }
     },
     created(){
+        /* 获取物业楼盘信息 */
+        postData('/arrear/selectPropertyList',{
+            code : localStorage.getItem('jinzhuma'),
+            fdno : localStorage.getItem('fdno'),
+            yhno : localStorage.getItem('arrYhno')
+        }).then(res =>{
+            for(let i = 0; i<res.data.length;i++){
+                this.list[i].key = res.data
+                this.list[i].value = res.data
+                console.log(this.list)
+            }
+        }).catch(err =>{
+            p_alert_error()
+        }),
+        /* 获取详情 */
         postData('/arrear/selectArrearDetail',{
-
+            code : localStorage.getItem('jinzhuma'),
+            fdno : localStorage.getItem('fdno'),
+            yhno : localStorage.getItem('arrYhno')
+        }).then(res =>{
+            this.allList = res.data.slice(0,1)
+            this.allList2 = res.data
+            for(let i = 0;i<this.allList2.length;i++){
+               this.allMoney +=  parseInt(this.allList2[i].wsje)
+            }
+        }).catch(err =>{
+            p_alert_error()
         })
+        
     },
     methods:{
         // 点击收款
         shoukuan(){
 
+        },
+        /* 点击全选 */
+        checkAll(){
+            console.log(this.checkedBox)
+            if(this.checked){
+                console.log('为选中')
+                this.checkedBox = []
+            }else{
+                console.log('以选中')
+                this.checkedBox = true
+            }
+            
+        },
+        check(value){
+            console.log(value,'——_______')
         }
     }
 }

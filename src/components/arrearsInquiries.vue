@@ -124,7 +124,8 @@ export default {
         }
       },
       show(yhno){
-        console.log(yhno)
+        localStorage.setItem('arrYhno',yhno)
+        this.$router.push('./arrearsDetails')
       }
     }
 }
