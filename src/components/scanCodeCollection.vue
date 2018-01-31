@@ -4,7 +4,7 @@
     <div class="content">
         <template>
             <div class="padding10">
-                <h3>本欠收款：1020元.</h3>  
+                <h3>本欠收款：{{money}}元.</h3>  
             </div>  
                 <group title="选择支付方式">
                     <radio :options="radio001" @on-change="change" :selected-label-style="{color: '#46bd26'}" v-model="redioVal"></radio>
@@ -62,8 +62,12 @@ export default {
     data(){
         return {
             radio001: [ '支付宝收款码', '微信收款码' ],
-            redioVal:'支付宝收款码'
+            redioVal:'支付宝收款码',
+            money:0,
         }
+    },
+    created(){
+        this.money = localStorage.getItem('money')
     },
     methods:{
         change (value, label) {

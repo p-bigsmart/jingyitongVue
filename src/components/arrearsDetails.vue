@@ -17,28 +17,24 @@
           </template>
           <template>
               <group title="费用详情">
-                  <table width="100%">
-                      <thead>
-                          <tr>
-                            <td>所属月份</td>
-                            <td>物业名称</td>
-                            <td>项目名称</td>
-                            <td>应收金额</td>
-                            <td><input type="checkbox" v-model="checked" @click="checkAll"/></td>
-                          </tr>
-                      </thead>
-                      <tbody>
+                          <flexbox>
+                            <flexbox-item ><div class="flex-demo">所属月份</div></flexbox-item>
+                            <flexbox-item><div class="flex-demo">物业名称</div></flexbox-item>
+                            <flexbox-item><div class="flex-demo">项目名称</div></flexbox-item>
+                            <flexbox-item><div class="flex-demo">应收金额</div></flexbox-item>
+                            <flexbox-item :span="1"></flexbox-item>
+                          </flexbox>
                           <template v-for="item in allList2">
-                            <tr>
-                                <td>{{item.djDate}}</td>
-                                <td>{{item.wyname}}</td>
-                                <td>{{item.xmname}}</td>
-                                <td>{{item.wsje}}</td>
-                                <td><input type="checkbox" v-model="checkedBox" :value="item.wsje" @change="check(value)"/></td>
-                            </tr>
+                              <label :for="item.mid"  >
+                            <flexbox >
+                                <flexbox-item ><div class="flex-demo">{{item.djDate}}</div></flexbox-item >
+                                <flexbox-item ><div class="flex-demo">{{item.wyname}}</div></flexbox-item >
+                                <flexbox-item ><div class="flex-demo">{{item.xmname}}</div></flexbox-item >
+                                <flexbox-item ><div class="flex-demo">{{item.wsje}}</div></flexbox-item >
+                                <flexbox-item :span="1"><input type="checkbox" v-model="checkedBox" :id="item.mid" :value="item.wsje" @click="checkClick(item.wsje,$event)"/></flexbox-item >
+                            </flexbox>
+                            </label>
                           </template>
-                      </tbody>
-                  </table>
               </group>
           </template>
           <template>
@@ -46,7 +42,7 @@
                   <div class="padding10">
                       <flexbox>
                   <flexbox-item :span="6">应收合计：{{this.allMoney}}元</flexbox-item>
-                  <flexbox-item ><div class="textRight">本次收款：0元</div></flexbox-item>
+                  <flexbox-item ><div class="textRight">本次收款：{{this.money}}元</div></flexbox-item>
                 </flexbox>
                   </div>
               </group>
@@ -104,7 +100,8 @@ export default {
             allList2:[],
             allMoney:0,
             checked:false,
-            checkedBox:[]
+            checkedBox:[],
+            money:0
         }
     },
     created(){
@@ -115,9 +112,9 @@ export default {
             yhno : localStorage.getItem('arrYhno')
         }).then(res =>{
             for(let i = 0; i<res.data.length;i++){
-                this.list[i].key = res.data
-                this.list[i].value = res.data
-                console.log(this.list)
+                this.list[i].key = res.data.toString()
+                this.list[i].value = res.data.toString()
+                console.log(this.list,)
             }
         }).catch(err =>{
             p_alert_error()
@@ -141,22 +138,14 @@ export default {
     methods:{
         // 点击收款
         shoukuan(){
-
+            localStorage.setItem('money',this.money)
+            this.$router.push('./scanCodeCollection')
         },
-        /* 点击全选 */
-        checkAll(){
-            console.log(this.checkedBox)
-            if(this.checked){
-                console.log('为选中')
-                this.checkedBox = []
-            }else{
-                console.log('以选中')
-                this.checkedBox = true
-            }
-            
-        },
-        check(value){
-            console.log(value,'——_______')
+        checkClick(money,event){
+            if(event.target.checked) 
+            this.money +=Math.floor(money)
+            else
+            this.money -=Math.floor(money)
         }
     }
 }
@@ -177,5 +166,10 @@ export default {
     .textRight{
         text-align: right;
     }
-    
+    .flex-demo {
+  text-align: center;
+  font-size:15px;
+  height:30px;
+  line-height:30px;
+}
 </style>
