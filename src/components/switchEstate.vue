@@ -66,13 +66,14 @@ import {
   FlexboxItem,
   Selector
 } from "vux";
-import { p_alert, p_alert_error } from "src/util/alert";
+import { p_alert, p_alert_error, p_alert_hide } from "src/util/alert";
 import { postData } from "src/util/base";
 
 export default {
   components: {
     p_alert,
     p_alert_error,
+    p_alert_hide,
     postData,
     XButton,
     XHeader,
@@ -119,9 +120,9 @@ export default {
                     postData('/fdset/selectListAll',{
                         code:localStorage.getItem('jinzhuma')
                     }).then(res =>{
-                        console.log(res)
+                        console.log(res.data)
                         if(res.data.length){
-                            this.list.push(res.data)
+                            this.list =res.data
                         }else{
                             this.loupanPlace = '此账号暂无可切换楼盘'
                         }
@@ -146,7 +147,8 @@ export default {
     switchBtn(ref) {
       if (this.$refs[ref].getFullValue() instanceof Object) {
         this.selectValue = this.$refs[ref].getFullValue()[0].key;
-        console.log(this.selectValue);
+        localStorage.setItem("fdno",this.selectValue);
+        p_alert_hide('切换楼盘成功','返回首页',()=>{this.$router.push('./index')})
       } else {
         p_alert("请选择要切换的楼盘", "切换楼盘不能为空.");
         return false;

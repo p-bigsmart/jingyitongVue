@@ -3,7 +3,7 @@
         <x-header title="精易通物管助手--欠费查询"></x-header>
         <div class="content">
           <group>
-              <datetime v-model="dateTime" placeholder="请选择截止时间"  format="YYYY-MM-DD HH:mm"   title="截止时间"></datetime>
+              <datetime v-model="dateTime" placeholder="请选择截止时间"  format="YYYY-MM-DD"   title="截止时间"></datetime>
           </group>
           <group title="单击一行查看详细信息" class="weui-cells_form">
             <x-input placeholder="物业\业户\招牌或简称" class="weui-vcode" v-model="wuyeNum">
