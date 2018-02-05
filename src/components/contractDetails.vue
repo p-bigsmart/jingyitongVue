@@ -5,8 +5,8 @@
           <div class="content"  slot="default">
               <div class="padding15" v-for="list in allList">
                   <flexbox>
-                    <flexboxItem :span="9"><div class="marginTop10">合同号：{{list[0].htno}}</div></flexboxItem>
-                    <flexboxItem ><div class="text_right color_red marginTop10" >{{htzt}}</div></flexboxItem>
+                    <flexboxItem :span="9"><div class="marginTop10"><b>合同号：{{list[0].htno}}</b></div></flexboxItem>
+                    <flexboxItem ><div class="text_right color_red marginTop10" ><b>{{htzt}}</b></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">租期：{{list[0].htbdate | formatDate}}--{{list[0].edate | formatDate}}</div></flexboxItem>
@@ -136,7 +136,7 @@ export default {
           this.allList.push(res.data)
           console.log(this.allList)
           this.htzt = localStorage.getItem('htzt')
-          if(localStorage.getItem('htzt') ==  '未生效' || localStorage.getItem('htzt') == '已初审') this.htztNum = 0
+          if(localStorage.getItem('htzt') ==  '未生效' || localStorage.getItem('htzt') == '已初审' || localStorage.getItem('htzt') == '已终止') this.htztNum = 0
             else this.htztNum = 1
             console.log('是否生效：'+this.htztNum)
       }).catch(err =>{

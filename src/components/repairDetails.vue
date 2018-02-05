@@ -53,9 +53,12 @@
                         </div>
                     </flexboxItem>
                 </flexbox>
-                <template v-if="photoList[0].length">
-                <flexbox :gutter="0" :key="array[0].filename"  v-for="array in photoList">
-                    <flexboxItem :span="3" ><div class="imgDiv marginTop10"><img :src="`${base}/bxupfile/`+array[0].filename" alt=""></div></flexboxItem>
+                <!-- v-if="photoList[0].length" -->
+                <template >
+                <flexbox :gutter="0">
+                    <flexboxItem ><div class="imgDiv marginTop10 floatLeft" v-for="item in ImgHttp">
+                            <img style="width:50px;height:50px;"   :key="item" :src="item" alt="">
+                        </div></flexboxItem>
                 </flexbox>
                 </template>
                 <flexbox :gutter="0">
@@ -148,7 +151,7 @@ export default{
             ServiceFee : '' ,
             base:'',
             fileVal:'',
-            ImgHttp: ''
+            ImgHttp: []
         }
     },
     filters: {
@@ -171,7 +174,6 @@ export default{
             bxno:localStorage.getItem('bxno')
         }).then(res =>{
             this.allList.push(res.data)
-            console.log(this.allList)
         }).catch(err =>{
             console.log(err)
         })
@@ -180,10 +182,9 @@ export default{
             fdno:localStorage.getItem('fdno'),
             bxno:localStorage.getItem('bxno')
         }).then(res =>{
-                this.base = baseURL
-                this.base = this.base.slice(7)
-                this.photoList.push(res.data)
-                console.log(this.photoList[0])
+                console.log(res)
+                  this.ImgHttp.push(baseURL+ '/wxupfile/' + res.data[0].filename)
+                  console.log(this.ImgHttp)
         }).catch(err =>{
             console.log(err)
         })
@@ -198,18 +199,29 @@ export default{
         },
         tijiao(arr){
             console.log(this.ServiceFee,'服务费')
-            
+            postData('/wxupfile/getImage',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            bxno:localStorage.getItem('bxno')
+        }).then(res =>{
+                console.log(res)
+                  this.ImgHttp.push(baseURL+ '/wxupfile/' + res.data[0].filename)
+                  console.log(this.ImgHttp)
+        }).catch(err =>{
+            console.log(err)
+        })
         },
         // 图片上传 
         fileUp(e){
-            let upImg = this.$refs.upImg[0].files[0]
+            let upImg = this.$refs.upImg[0].files[0] 
             let param = new FormData()
             param.append('file', upImg)
-          axios.post('/wxupfile/upload', param)
+            axios.post('/wxupfile/upload', param)
           .then(response=>{
             //   http://120.76.203.34:8081/tsupfile/5e015048.png
             console.log(response.data, '图片上传成功');
-            this.ImgHttp = baseURL+ '/tsupfile/' +response.data.image
+            this.ImgHttp.push(baseURL+ '/wxupfile/' +response.data.image)
+            
           }).catch(err =>{
               console.log(err)
           })
@@ -249,6 +261,10 @@ nav{
     overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
     white-space:nowrap;
 text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+}
+.floatLeft{
+    float: left;
+    margin-left:10px;
 }
 .marginTop10{
     margin-top:6px;

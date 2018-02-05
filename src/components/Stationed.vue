@@ -286,5 +286,4 @@ export default {
 header{
     margin-top:10px;
 }
-
 </style>

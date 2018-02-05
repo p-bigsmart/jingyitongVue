@@ -4,28 +4,29 @@
       <div class="content">
           <template>
                <group>
-                   <datetime v-model="dateVal" format="YYYY-MM-DD HH:mm" title="出单月份：" placeholder="请选择出单月份"></datetime>
+                   <datetime v-model="dataVal" format="YYYY年MM月" title="出单月份：" placeholder="请选择出单月份"></datetime>
                </group>
            </template>
            <template>
                <group>
                <div class='list'>
-                   <h3>抄表号：2017110101</h3>
-                   <p>业务：张大先</p>
-                   <p>房号：三栋中梯301</p>
-                   <p>换表读数：0</p>
-                   <p>上次抄表：3000</p>
-                   <p>本期抄表：3200</p>
-                   <p>实际用量：200</p>
+                   <h3>抄表号：{{chaobiaoValue}}</h3>
+                   <p>业户：{{allList.yhname}}</p>
+                   <p>房号：{{allList.wyname}}</p>
+                   <p>换表读数：{{allList.maxds}}</p>
+                   <p>上次抄表：{{allList.syds}}</p>
+                   <p>本期抄表：{{allList.byds}}</p>
+                   <p>实际用量：{{allList.sjyl}}</p>
                </div>
                </group>
            </template>
            <template>
                <div class="padding10">
-                <x-button class="button" @click.native="shoukuan">返回清单</x-button>
+                <x-button class="button" link="./meterReadingList">返回清单</x-button>
             </div>
            </template>
       </div>
+      <commonFooter></commonFooter>
   </div>
 </template>
 
@@ -56,8 +57,30 @@ export default {
         XTextarea,
         Datetime,
         Swiper,
-        baseURL
+        baseURL,
+        postData
   },
+  data(){
+      return{
+        dataVal:localStorage.getItem('opMonth')
+        ,allList:[]
+        ,chaobiaoValue :localStorage.getItem('menterName')
+      }
+  },
+  created(){
+      postData('/mrding/getMeterReading',{
+            code : localStorage.getItem('jinzhuma'),
+            fdno : localStorage.getItem('fdno'),
+            xmflno : localStorage.getItem('chaobiaoValue'),
+            opMonth : localStorage.getItem('opMonth'),
+            meterName : localStorage.getItem('menterName')
+      }).then(res =>{
+          console.log(res)
+          this.allList = res.data
+      }).catch(err =>{
+          p_alert_error()
+      })
+  }
 }
 </script>
 

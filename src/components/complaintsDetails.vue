@@ -42,14 +42,21 @@
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 ">现场图片：</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 text_right"><img src="../assets/paizhao.png" alt=""></div></flexboxItem>
+                    <flexboxItem>
+                        <div class="fontSize14 text_right marginTop10">
+                            <a href="javascript:;" class="file">
+                                <input type="file" ref="upImg"  id="file" @change="fileUp($event)"  />
+                            </a>
+                        </div>
+                    </flexboxItem>
                 </flexbox>
+                <template >
                 <flexbox :gutter="0">
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
-                    <flexboxItem :span="3"><div class="imgDiv marginTop10"><img src="" alt=""></div></flexboxItem>
+                    <flexboxItem ><div class="imgDiv marginTop10 floatLeft" v-for="item in ImgHttp">
+                            <img style="width:50px;height:50px;"   :key="item" :src="item" alt="">
+                        </div></flexboxItem>
                 </flexbox>
+                </template>
                 <group>
                     <x-textarea title="处理结果" placeholder="请输入处理结果"  :show-counter="false" :rows="1" autosize></x-textarea>
                 </group>
@@ -101,11 +108,28 @@ export default{
             status:'未处理',
             minuteListValue:"",
             demo04_list: imgList,
+            ImgHttp:[]
         }
     },
     methods:{
         search(){
             console.log(1)
+        },
+        // 图片上传 
+        fileUp(e){
+            let upImg = this.$refs.upImg[0].files[0]
+            let param = new FormData()
+            param.append('file', upImg)
+          axios.post('tsupfile/upload', param)
+          .then(response=>{
+            //   http://120.76.203.34:8081/tsupfile/5e015048.png
+            console.log(response.data, '图片上传成功');
+            this.ImgHttp.push(baseURL+ '/tsupfile/' +response.data.image)
+            
+          }).catch(err =>{
+              console.log(err)
+          })
+
         }
     }
 }
@@ -150,5 +174,32 @@ text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省
     border:1px solid;
     width:100%;
     height:50px;
+}
+.imgDiv img{
+    width:100%;
+    height:50px;
+}
+a.file {
+  width:25px;
+  height:30px;
+  line-height:30px;
+  background:url('../assets/paizhao.png') no-repeat;
+  text-align:center;
+  display:inline-block;/*具有行内元素的视觉，块级元素的属性 宽高*/
+  overflow:hidden;/*去掉的话，输入框也可以点击*/
+  position:relative;/*相对定位，为 #file 的绝对定位准备*/
+  top:5px;
+}
+a{
+  text-decoration:none;
+  color:#FFF;
+}
+#file{
+   opacity:0;/*设置此控件透明度为零，即完全透明*/
+   filter:alpha(opacity=0);/*设置此控件透明度为零，即完全透明针对IE*/
+   width:100%;
+   position:absolute;/*绝对定位，相对于 .input */
+   top:0;
+   right:0;
 }
 </style>

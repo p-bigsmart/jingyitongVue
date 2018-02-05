@@ -27,7 +27,7 @@
                           <template v-for="item in allList2">
                               <label :for="item.mid"  >
                             <flexbox >
-                                <flexbox-item ><div class="flex-demo">{{item.djDate}}</div></flexbox-item >
+                                <flexbox-item ><div class="flex-demo">{{item.djdate | formatDate}}</div></flexbox-item >
                                 <flexbox-item ><div class="flex-demo">{{item.wyname}}</div></flexbox-item >
                                 <flexbox-item ><div class="flex-demo">{{item.xmname}}</div></flexbox-item >
                                 <flexbox-item ><div class="flex-demo">{{item.wsje}}</div></flexbox-item >
@@ -88,7 +88,7 @@ export default {
   filters: {
         formatDate(time) {
             var date = new Date(time);
-            return formatDate(date, 'yyyy-MM-dd');
+            return formatDate(date, 'yyyy-MM');
         }
     },
     data(){
@@ -125,6 +125,7 @@ export default {
             fdno : localStorage.getItem('fdno'),
             yhno : localStorage.getItem('arrYhno')
         }).then(res =>{
+            console.log(res)
             this.allList = res.data.slice(0,1)
             this.allList2 = res.data
             for(let i = 0;i<this.allList2.length;i++){

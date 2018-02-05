@@ -5,7 +5,9 @@
     <x-header>精易通物管助手--扫码抄表</x-header>
     <div class="content">
         
-        
+        <div class="marginTop10" style="height:30px;overflow:hidden;">
+            <x-button mini style="float:right;" type="primary" link="./meterReadingList">抄表清单</x-button>
+        </div>
         <group>
               <datetime v-model="selectValue"  title="出单月份" placeholder="请选择出单日期" format="YYYY年MM月"  ></datetime>
           </group>
@@ -71,6 +73,31 @@
         <div class="marginTop15 marginBottom10">
             <x-button type="primary" @click.native="tijiao">提交抄表</x-button>
         </div>
+        <div v-transfer-dom>
+            <x-dialog v-model="showScrollBox" class="dialog-demo"  hide-on-blur>
+                <h3 class="dialog-title marginTop10">合同审批</h3>
+                <div class="hr"></div>
+                <!-- 点击时候要获取到河东编号 然后赋值过来 -->
+                <div>查无此抄表号的业户，如果需要绑定此抄表号，
+                    请在以下搜索对应业户后进行绑定。
+                </div>
+                <div class="marginTop10"><b>抄表号：<red>2017110201</red></b></div>
+                <div class="alertCentent">
+                    <group>
+                        <x-input  placeholder="请输入房号搜索" v-model="fanghao">
+                           <x-button slot="right" type="primary" mini @click.native="searchCaobiao">搜索</x-button>
+                        </x-input>
+                    </group>
+                </div>
+                <div v-show="searchCaobiaoShow">
+                    <div class="marginTop10">业户：李四</div>
+                    <div class="marginTop10">房号：三栋中梯302</div>
+                </div>
+                <div class="marginTop10">
+                    <x-button type="primary" @click.native="bangding">绑定</x-button>
+                </div>
+            </x-dialog>
+            </div>
         
             <common-footer></common-footer>
     </div>
@@ -82,10 +109,13 @@
 
 import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom, Datetime} from 'vux'
 import {postData} from 'src/util/base'
-import {p_alert,p_alert_error} from 'src/util/alert'
+import {p_alert,p_alert_error,p_alert_hide} from 'src/util/alert'
 import commonFooter from 'src/common/footer'
 
 export default {
+    directives: {
+    TransferDom
+  },
     components:{
       XButton,
         XHeader,
@@ -98,7 +128,8 @@ export default {
         FlexboxItem,
         XDialog,
         XInput,
-        Datetime
+        Datetime,
+        p_alert_hide,
   },
   data(){
       return {
@@ -113,7 +144,11 @@ export default {
           listShow:false,
           searchValue:[],
         //   本期抄表
-          benqichaobiao:''
+          benqichaobiao:'',
+          fanghao:'',
+          showScrollBox:false,
+          searchCaobiaoShow:false,
+          fanghaoValue:''
       }
   },
   methods:{
@@ -164,7 +199,24 @@ export default {
             }).then(res =>{
                 if(res.data){
                     postData('/mrding/setMeterReading',{
-                        
+                        code : localStorage.getItem('jinzhuma'),
+                        fdno : localStorage.getItem('fdno'),
+                        xmflno : this.chaobiaoValue,
+                        opMonth : this.selectValue,
+                        meterName : this.erweimaTest,
+                        byds : this.benqichaobiao,
+                        maxDs : 0,
+                        fromDate : this.startDate,
+                        toDate : this.endDate
+                    }).then(res =>{
+                        console.log(res)
+                        if(res.data.success == 0){
+                            p_alert('成功','抄表成功！')
+                        }else{
+                            p_alert('抄表失败',res.data.errinfo)
+                        }
+                    }).catch(err =>{
+                        p_alert_error()
                     })
                 }else{
                     p_alert('已抄表','这个月份已经抄表过了，不能再抄表')
@@ -186,16 +238,35 @@ export default {
             }).then(res => {
                 let that = this
                 // 方法在这里
-                console.log(res.data)
+                console.log(res,'888888888')
                 if(res.data.id > 0){
                     that.listShow = true
                     that.searchValue = res.data
                     console.log(that.searchValue)
                 }else{
-                    p_alert('暂无数据','请输入正确的抄表号和出单月份')
+                    p_alert_hide('暂无数据','抄表号未绑定业户',()=>{this.showScrollBox = true})
                 }
             }).catch(error =>{
                 p_alert('网络故障',error)
+            })
+        }
+    },
+    // 通过房号搜索
+    searchCaobiao(){
+        if(this.fanghao.length != 0){
+            postData('/mrding/searchForWy',{
+                code : localStorage.getItem('jinzhuma'),
+                fdno : localStorage.getItem('fdno'),
+                aKey : this.fanghao
+            }).then(res =>{
+                if(res.data){
+                    this.fanghaoValue = res.data
+                }else{
+                    this.showScrollBox = false
+                    p_alert_hide('房号错误','请输入正确的房号',()=>{this.showScrollBox = true})
+                }
+            }).catch(err =>{
+                p_alert_error()
             })
         }
     }
@@ -224,5 +295,8 @@ table tr td:nth-child(1){
 }
 table tr td input{
     height:100%;
+}
+red{
+    color:red;
 }
 </style>

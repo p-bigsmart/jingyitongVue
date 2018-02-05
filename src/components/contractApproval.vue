@@ -14,8 +14,8 @@
         <div class="content" v-for="array in contactList">
             <nav v-for="contact in array">
                 <flexbox>
-                    <flexboxItem :span="9"><div class="marginTop10">合同号：{{contact.htno}}</div></flexboxItem>
-                    <flexboxItem ><div class="text_right color_red marginTop10" >{{contact.htzt}}</div></flexboxItem>
+                    <flexboxItem :span="9"><div class="marginTop10"><b>合同号：{{contact.htno}}</b></div></flexboxItem>
+                    <flexboxItem ><div class="text_right color_red marginTop10" ><b>{{contact.htzt}}</b></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">租户:{{contact.yhname}}</div></flexboxItem>
