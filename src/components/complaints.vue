@@ -1,6 +1,5 @@
 <template>
   <div class="height100">
-      <view-box ref="viewBox" >
         <x-header>
             <input type="text" placeholder="单号\物业\业户" v-model="searchVal" class="searchVal" />
             <button class="searchBtn" @click="search">搜索</button>
@@ -12,12 +11,12 @@
                 </select>
                 </span>
         </x-header>
-          <div class="content" v-for="array in listAll">
-            <nav v-for="contact in array">
+          <div class="content" :key="array[0].id" v-for="array in listAll" >
+            <nav :key="contact.id" v-for="contact in array">
                 <flexbox>
-                    <flexboxItem :span="7"><div class="marginTop10">投诉单号：{{contact.bxno}}</div></flexboxItem>
+                    <flexboxItem :span="7"><div class="marginTop10" style="font-size:15px"><b>投诉单号：{{contact.tsno}}</b></div></flexboxItem>
                     <flexboxItem :span="3"><div class="text_right  marginTop10 fontSize14">投诉方式:{{contact.tsfs}}</div></flexboxItem>
-                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" v-text="status"></div></flexboxItem>
+                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14"><b >{{contact.iscl ? '已处理' : '未处理'}}</b></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">投诉人:{{contact.wyname}}</div></flexboxItem>
@@ -34,8 +33,8 @@
                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10" style="height:28px;">接待人：{{contact.jdry}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">投诉时间：{{contact.curbxdate}}</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">投诉类型：{{contact.tsclass}}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">投诉时间：{{contact.curbxdate | formatDate}}</div></flexboxItem>
+                     <flexboxItem :span="5"><div class="fontSize14 text_right marginTop10">投诉类型：{{contact.tsclass}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
@@ -44,19 +43,18 @@
                 <div class="hr"></div>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 ">处理负责人:{{contact.clry}}</div></flexboxItem>
-                    <flexboxItem :span="8"><div class="fontSize14  text_right">处理日期:{{contact.cldate}}</div></flexboxItem>
+                    <flexboxItem :span="8"><div class="fontSize14  text_right">处理日期:{{contact.cldate | formatDate}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem>
                             <div class="marginTop10 text_right marginBottom10">
-                                <XButton text="查看详情" mini type="primary" link="./complaintsDetails"></XButton>
+                                <XButton text="查看详情" mini type="primary" link="./complaintsDetails" @click.native="xiangqing(contact.tsno)"></XButton>
                             </div>
                     </flexboxItem>
                 </flexbox>
             </nav>
           </div>
             <common-footer></common-footer>
-      </view-box>
   </div>
 </template>
 
@@ -76,6 +74,7 @@ import {
 import { p_alert, p_alert_error, p_alert_hide } from "src/util/alert";
 import { postData } from "src/util/base";
 import commonFooter from "src/common/footer";
+import { formatDate } from 'src/util/date'
 export default {
   components: {
     XButton,
@@ -90,6 +89,13 @@ export default {
     XDialog,
     XInput
   },
+  filters: {
+        formatDate(time) {
+            var date = new Date(time);
+            return formatDate(date, 'yyyy-MM-dd');
+        }
+    },
+  /* 一进来就获取到列表 插入到listAll里面循环输出 */
   created(){
     postData('/tstable/selectListAll',{
             code:localStorage.getItem('jinzhuma'),
@@ -109,12 +115,16 @@ export default {
       searchVal: "",
       status: "未处理",
       // 投诉清单数组
-      listAll:[],
+      listAll:[]
     };
   },
   methods: {
     search() {
       console.log(1);
+    },
+    /* 点击查看详情，将单号传入到前端数据库中 */
+    xiangqing(tsno){
+      localStorage.setItem('tsno',tsno)
     }
   }
 };

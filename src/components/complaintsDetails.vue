@@ -1,6 +1,5 @@
 <template>
   <div class="height100">
-      <view-box ref="viewBox" >
         <x-header>
             <input type="text" placeholder="单号\物业\业户" v-model="searchVal" class="searchVal" />
             <button class="searchBtn" @click="search">搜索</button>
@@ -15,31 +14,31 @@
         <div class="content">
             <nav >
                 <flexbox>
-                    <flexboxItem :span="7"><div class="marginTop10">投诉单号：BXAB20171101</div></span></flexboxItem>
-                    <flexboxItem :span="3"><div class="text_right  marginTop10 fontSize14">投诉方式:电话</div></flexboxItem>
-                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" v-text="status"></div></flexboxItem>
+                    <flexboxItem :span="7"><div class="marginTop10" style="font-size:15px;"><b>投诉单号：{{allList.tsno}}</b></div></flexboxItem>
+                    <flexboxItem :span="3"><div class="text_right  marginTop10 fontSize14">投诉方式:{{allList.tsfs}}</div></flexboxItem>
+                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" ><b>{{allList.iscl ? '已处理' : '未处理'}}</b></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">投诉人:中山市工业进出口开发有限公司</div></flexboxItem>
-                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">A座301</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">投诉人:{{allList.wyname}}</div></flexboxItem>
+                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">{{allList.wyno}}</div></flexboxItem>
                      <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10"><img src="../assets/GPS.png" alt=""></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">联系人：张先生13834488888 <img style="vertical-align:middle" src="../assets/phone.png" alt=""></div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10" style="height:28px;">接待人：小李</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">联系人：{{allList.tsry}}{{allList.yhtel}} <img style="vertical-align:middle" src="../assets/phone.png" alt=""></div></flexboxItem>
+                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10" style="height:28px;">接待人：{{allList.jdry}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">投诉时间：2017-11-01 10:30</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">投诉类型：A类</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10">投诉时间：{{allList.curbxdate}}</div></flexboxItem>
+                     <flexboxItem :span="5"><div class="fontSize14 text_right marginTop10">投诉类型：{{allList.tsclass}}类</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
-                    <flexboxItem><div style="font-size:14px;">过道有拉圾...辅导费看来得佛挡杀佛多久饭放得开离开了(1515)</div></flexboxItem>
+                    <flexboxItem><div style="font-size:14px;">{{allList.tsxm}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
-                <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 ">接单负责人:陈工</div></flexboxItem>
-                </flexbox>
+                <group>
+                    <x-textarea title="接单处理人" placeholder="请输入处理结果" v-model="allList.clry" :readonly="allList.iscl" :show-counter="false" :rows="1" autosize></x-textarea>
+                </group>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 ">现场图片：</div></flexboxItem>
                     <flexboxItem>
@@ -52,38 +51,47 @@
                 </flexbox>
                 <template >
                 <flexbox :gutter="0">
-                    <flexboxItem ><div class="imgDiv marginTop10 floatLeft" v-for="item in ImgHttp">
+                    <flexboxItem ><div class="imgDiv marginTop10 floatLeft" :key="item" v-for="item in ImgHttp">
                             <img style="width:50px;height:50px;"   :key="item" :src="item" alt="">
                         </div></flexboxItem>
                 </flexbox>
                 </template>
                 <group>
-                    <x-textarea title="处理结果" placeholder="请输入处理结果"  :show-counter="false" :rows="1" autosize></x-textarea>
+                    <x-textarea title="处理结果" placeholder="请输入处理结果" v-model="allList.clxm" :readonly="allList.iscl" :show-counter="false" :rows="1" autosize></x-textarea>
                 </group>
                 <group>
-                    <datetime v-model="minuteListValue" placeholder='请选择处理完成时间' format="YYYY-MM-DD HH:mm"   title="处理时间"></datetime>
+                    <datetime placeholder='请选择处理完成时间' v-model="allList.cldate" format="YYYY-MM-DD HH:mm"   title="处理时间" :readonly="allList.iscl"></datetime>
                 </group>
-                    <div style="margin-top:20px"><x-button text="处理完成" type="primary"></x-button></div>
-
+                    <div  v-if="!allList.iscl" style="margin-top:20px"><x-button text="处理完成" type="primary" @click.native="tijiao(allList)"></x-button></div>
+                <!-- 如果没有回访人姓名，那就不显示回访记录 -->
+                <template v-if="allList.iscl">
+                    <flexbox :gutter="0" >
+                    <flexboxItem ><div class="fontSize14 marginTop10"><b>回访：</b></div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">回访时间:{{allList.hfdate }}</div></flexboxItem>
+                </flexbox>
+                <div class="hr"></div>
+                <flexbox :gutter="0" >
+                    <flexboxItem ><div class="fontSize14 marginTop10">回访人：{{allList.hfry }}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">回访方式：{{allList.hffs }}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">满意程度：{{allList.approve  }}</div></flexboxItem>
+                </flexbox>
+                <div class="marginTop10"></div>
+                </template>
             </nav>
             <common-footer></common-footer>
         </div>
-      </view-box>
   </div>
 </template>
 
 <script>
 import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom, XTextarea, Datetime, Swiper} from 'vux'
 
-import { p_alert, p_alert_error } from 'src/util/alert'
-import { postData } from 'src/util/base'
+import { p_alert, p_alert_error,p_alert_hide } from 'src/util/alert'
+import { postData, baseURL } from 'src/util/base'
 import commonFooter from 'src/common/footer'
-
-const imgList = [
-  'http://placeholder.qiniudn.com/800x300/FF3B3B/ffffff',
-  'http://placeholder.qiniudn.com/800x300/FFEF7D/ffffff',
-  'http://placeholder.qiniudn.com/800x300/8AEEB1/ffffff'
-]
+import { formatDate } from 'src/util/date'
+import Exif from 'exif-js'  
+import axios from 'axios'
 
 export default{
     components:{
@@ -100,16 +108,58 @@ export default{
         XInput,
         XTextarea,
         Datetime,
-        Swiper
+        Swiper,
+        Exif,
+        axios,
+        baseURL
     },
     data(){
         return {
             searchVal:'',
             status:'未处理',
             minuteListValue:"",
-            demo04_list: imgList,
-            ImgHttp:[]
+            ImgHttp:[],
+            allList:null
         }
+    },
+  filters: {
+        formatDate(time) {
+            var date = new Date(time);
+            return formatDate(date, 'yyyy-MM-dd');
+        }
+    },
+    created(){
+        
+        postData('/tstable/getDetail',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            tsno:localStorage.getItem('tsno')
+        }).then(res =>{
+            if(res.data){
+                this.allList = res.data
+                let date = new Date(this.allList.cldate);
+                this.allList.cldate = formatDate(date, 'yyyy-MM-dd hh:mm')
+            }
+            else
+            p_alert_hide('暂无数据','返回前一页确认数据',function(){history.go(-1)})
+        }).catch(err =>{
+            p_alert_error()
+        })
+
+        postData('tsupfile/getImage',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            bxno:localStorage.getItem('tsno')
+        }).then(res =>{
+            console.log(res)
+                 if(res.data.length){
+                    for(let i = 0;i<res.data.length;i++){
+                        this.ImgHttp.push(baseURL+ '/wxupfile/' + res.data[i].filename)
+                    }
+                }
+        }).catch(err =>{
+            p_alert_error()
+        })
     },
     methods:{
         search(){
@@ -117,9 +167,12 @@ export default{
         },
         // 图片上传 
         fileUp(e){
-            let upImg = this.$refs.upImg[0].files[0]
+            let upImg = this.$refs.upImg.files[0]
             let param = new FormData()
             param.append('file', upImg)
+            param.append('code',localStorage.getItem('jinzhuma'))
+            param.append('fdno',localStorage.getItem('fdno'))
+            param.append('tsno',localStorage.getItem('tsno'))
           axios.post('tsupfile/upload', param)
           .then(response=>{
             //   http://120.76.203.34:8081/tsupfile/5e015048.png
@@ -130,6 +183,25 @@ export default{
               console.log(err)
           })
 
+        },
+        tijiao(list){
+            if(list.clxm && list.cldate && list.clry){
+                postData('/tstable/operation',{
+                    code : localStorage.getItem('jinzhuma'),
+                    tsno : list.tsno,
+                    clry : list.clry,
+                    clxm : list.clxm,
+                    cldate : list.cldate,
+                    iscl : true
+                }).then(res =>{
+                    if(res.data) p_alert_hide('处理成功','点击确认返回投诉列表',function(){history.go(-1)})
+                    else p_alert('处理失败','请检查一下数据或刷新页面')
+                }).catch(err =>{
+                    p_alert_error()
+                })
+            }else{
+                p_alert('数据不完整','请输入完整信息再提交')
+            }
         }
     }
 }
@@ -171,7 +243,6 @@ text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省
     margin-bottom:6px;
 }
 .imgDiv img{
-    border:1px solid;
     width:100%;
     height:50px;
 }

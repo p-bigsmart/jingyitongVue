@@ -1,14 +1,13 @@
 <template>
   <div class="height100">
-      <view-box ref="viewBox" >
         <x-header>
             精易通物管助手--报修详情
         </x-header>
         <div class="content">
             <nav :key="arr.wyname" v-for="arr in allList">
                 <flexbox >
-                    <flexboxItem :span="7" ><div class="marginTop10">报修单号：{{arr.bxno}}</div></flexboxItem>
-                    <flexboxItem :span="3"><div class="text_center  marginTop10 fontSize14">
+                    <flexboxItem :span="9" ><div class="marginTop10">报修单号：{{arr.bxno}}</div></flexboxItem>
+                    <flexboxItem :span="1"><div class="text_center  marginTop10 fontSize14">
                         <span v-if="arr.isyh">
                             <img src="../assets/contactName.png">
                         </span>
@@ -19,17 +18,17 @@
                     <flexboxItem ><div class="text_right color_red marginTop10 fontSize14">{{arr.iscl ? '已处理' : '未处理'}}</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">业户:{{arr.wyname | dataVal}}</div></flexboxItem>
-                     <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10">{{arr.wyno | dataVal}}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10"><span v-if="arr.isyh">业户:</span><span v-else>报修人：</span>{{arr.wyname | dataVal}}</div></flexboxItem>
+                     <flexboxItem :span="3"><div class="fontSize14 text_right marginTop10">{{arr.wyno | dataVal}}</div></flexboxItem>
                      <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10"><img src="../assets/GPS.png" alt=""></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">联系人：{{arr.bxry | dataVal}}{{arr.yhtel | dataVal}}</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">报修类型：{{arr.bxtype | dataVal}}</div></flexboxItem>
+                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">报修类型：{{arr.bxtype | dataVal}}类</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">报修时间：{{arr.curbxdate | formatDate}}</div></flexboxItem>
-                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10">优先级：{{arr.priority ? '加急' : '普通'}}</div></flexboxItem>
+                     <flexboxItem :span="4"><div class="fontSize14 text_right marginTop10"><b>优先级：{{arr.priority ? '加急' : '普通'}}</b></div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
@@ -46,7 +45,7 @@
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">现场图片：</div></flexboxItem>
                     <flexboxItem>
-                        <div class="fontSize14 text_right marginTop10">
+                        <div class="fontSize14 text_right marginTop10"  v-if='!allList.iscl'>
                             <a href="javascript:;" class="file">
                                 <input type="file" ref="upImg"  id="file" @change="fileUp($event)"  />
                             </a>
@@ -56,7 +55,7 @@
                 <!-- v-if="photoList[0].length" -->
                 <template >
                 <flexbox :gutter="0">
-                    <flexboxItem ><div class="imgDiv marginTop10 floatLeft" v-for="item in ImgHttp">
+                    <flexboxItem ><div class="imgDiv marginTop10 floatLeft" :key="item" v-for="item in ImgHttp">
                             <img style="width:50px;height:50px;"   :key="item" :src="item" alt="">
                         </div></flexboxItem>
                 </flexbox>
@@ -65,30 +64,30 @@
                     <flexboxItem><div class="fontSize14 marginTop10">开工时间:{{arr.kgdate | formatDate}}</div></flexboxItem>
                 </flexbox>
                 <group>
-                    <x-textarea title="处理结果" placeholder="请输入处理结果" text-align="right"  :show-counter="false" :readonly="arr.iscl" :rows="1" autosize :value="arr.bz | dataVal"></x-textarea>
+                    <x-textarea title="处理结果" placeholder="请输入处理结果" text-align="right"  :show-counter="false" :readonly="arr.iscl" :rows="1" autosize v-model="arr.bz"></x-textarea>
                 </group>
                 <group>
-                    <datetime v-model="minuteListValue" :placeholder="arr.wcdate | formatDate " :readonly="arr.iscl" format="YYYY-MM-DD HH:mm"   title="完成时间"></datetime>
+                    <datetime v-model="arr.wcdate" placeholder="请选择完成时间" :readonly="arr.iscl" format="YYYY-MM-DD HH:mm"   :title="overTime"></datetime>
                 </group>
                 <group>
-                    <x-input title="材料费" type="number" :value="arr.clje ? arr.clje : '0'" :readonly="arr.iscl">
+                    <x-input title="材料费" type="number" v-model="cailiaofei"  :readonly="arr.iscl">
                         <span slot="right">元</span>
                     </x-input>
                 </group>
                 <group>
-                    <x-input title="服务费" type="number"  :value="arr.wxje ? arr.wxje : '0'" :readonly="arr.iscl" v-model="ServiceFee">
+                    <x-input title="服务费" type="number"  v-model="fuwufei" :readonly="arr.iscl" >
                         <span slot="right">元</span>
                     </x-input>
                 </group>
                 <flexbox :gutter="0">
                     <flexboxItem>
-                        <h4 class="marginTop10">合计：{{arr.totalje}}元</h4>
+                        <h4 class="marginTop10">合计：{{heji}}元</h4>
                     </flexboxItem>
                 </flexbox>
                     <div v-if="!arr.iscl" style="margin:20px 0"><x-button text="处理完成" type="primary" @click.native="tijiao(arr)"></x-button></div>
                 
                 <!-- 如果没有回访人姓名，那就不显示回访记录 -->
-                <template v-if="arr.hfry">
+                <template v-if="arr.iscl">
                     <flexbox :gutter="0" >
                     <flexboxItem ><div class="fontSize14 marginTop10"><b>回访：</b></div></flexboxItem>
                     <flexboxItem><div class="fontSize14 text_right marginTop10">回访时间:{{arr.hfdate | formatDate}}</div></flexboxItem>
@@ -104,14 +103,13 @@
             </nav>
             <common-footer></common-footer>
         </div>
-      </view-box>
   </div>
 </template>
 
 <script>
 import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog, TransferDomDirective as TransferDom, XTextarea, Datetime, Swiper} from 'vux'
 
-import { p_alert, p_alert_error } from 'src/util/alert'
+import { p_alert, p_alert_error,p_alert_hide } from 'src/util/alert'
 import { postData , baseURL } from 'src/util/base'
 import commonFooter from 'src/common/footer'
 import {formatDate} from 'src/util/date'
@@ -126,6 +124,7 @@ export default{
         Flexbox,
         p_alert,
         p_alert_error,
+        p_alert_hide,
         commonFooter,
         Selector,
         FlexboxItem,
@@ -150,9 +149,12 @@ export default{
             // 服务费
             ServiceFee : '' ,
             base:'',
-            fileVal:'',
-            ImgHttp: []
-        }
+            ImgHttp: [],
+            overTime:'完成时间',
+            jieguo:'',
+            cailiaofei:0,
+            fuwufei:0
+}
     },
     filters: {
         formatDate(time) {
@@ -174,8 +176,15 @@ export default{
             bxno:localStorage.getItem('bxno')
         }).then(res =>{
             this.allList.push(res.data)
+            let date = new Date(this.allList[0].wcdate);
+            this.allList[0].wcdate = formatDate(date, 'yyyy-MM-dd hh:mm')
+            console.log(this.allList[0].wxje)
+
+            this.cailiaofei = parseInt(this.allList[0].clje)
+            this.fuwufei = parseInt(this.allList[0].wxje)
+            
         }).catch(err =>{
-            console.log(err)
+            p_alert_error()
         })
         postData('/wxupfile/getImage',{
             code:localStorage.getItem('jinzhuma'),
@@ -183,32 +192,51 @@ export default{
             bxno:localStorage.getItem('bxno')
         }).then(res =>{
                 console.log(res)
-                  this.ImgHttp.push(baseURL+ '/wxupfile/' + res.data[0].filename)
-                  console.log(this.ImgHttp)
+                if(res.data.length){
+                    for(let i = 0;i<res.data.length;i++){
+                        this.ImgHttp.push(baseURL+ '/wxupfile/' + res.data[i].filename)
+                    }
+                }
+                  
         }).catch(err =>{
-            console.log(err)
+            p_alert_error()
         })
         
     },
+    computed:{
+       heji(){
+           
+           if(this.cailiaofei != '' && this.fuwufei != '')
+           return Number(this.cailiaofei) + Number(this.fuwufei)
+           else if(this.cailiaofei == ''){
+               this.cailiaofei = 0;
+               return Number(this.cailiaofei) + Number(this.fuwufei)
+           }else if(this.fuwufei == ''){
+               this.fuwufei = 0;
+               return Number(this.cailiaofei) + Number(this.fuwufei)
+
+           }
+       }
+    },
     methods:{
-        search(){
-            console.log(1)
-        },
-        super1(){
-            console.log(11)
-        },
         tijiao(arr){
             console.log(this.ServiceFee,'服务费')
-            postData('/wxupfile/getImage',{
+            postData('/bxtable/operation',{
             code:localStorage.getItem('jinzhuma'),
-            fdno:localStorage.getItem('fdno'),
-            bxno:localStorage.getItem('bxno')
+            bxno:localStorage.getItem('bxno'),
+            wxry:arr.wxry,
+            kgdate:arr.kgdate,
+            bz:arr.bz,
+            wcdate:arr.wcdate,
+            clje:arr.clje,
+            wxje:arr.wxje,
+            totalje:arr.totalje,
+            iscl:true
         }).then(res =>{
-                console.log(res)
-                  this.ImgHttp.push(baseURL+ '/wxupfile/' + res.data[0].filename)
-                  console.log(this.ImgHttp)
+                if(res) p_alert_hide('处理成功','点击确认返回报修详情页',function(){history.go(-1)})
+                else p_alert_error()
         }).catch(err =>{
-            console.log(err)
+            p_alert_error()
         })
         },
         // 图片上传 
@@ -216,9 +244,13 @@ export default{
             let upImg = this.$refs.upImg[0].files[0] 
             let param = new FormData()
             param.append('file', upImg)
+            param.append('code',localStorage.getItem('jinzhuma'))
+            param.append('fdno',localStorage.getItem('fdno'))
+            param.append('bxno',localStorage.getItem('bxno'))
             axios.post('/wxupfile/upload', param)
           .then(response=>{
             //   http://120.76.203.34:8081/tsupfile/5e015048.png
+            console.log(response)
             console.log(response.data, '图片上传成功');
             this.ImgHttp.push(baseURL+ '/wxupfile/' +response.data.image)
             

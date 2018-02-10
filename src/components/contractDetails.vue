@@ -9,20 +9,19 @@
                     <flexboxItem ><div class="text_right color_red marginTop10" ><b>{{htzt}}</b></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
+                    <flexboxItem><div class="fontSize14 marginTop10"><b>租户:{{list[0].yhname}}</b></div></flexboxItem>
+                </flexbox>
+                <flexbox :gutter="0">
+                    <flexboxItem><div class="fontSize14 marginTop10">联系人：{{list[0].lxr ? list[0].lxr : '暂无'}}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 text_right marginTop10">联系电话：{{list[0].mobile ? list[0].mobile : '暂无'}}</div></flexboxItem>
+                </flexbox>
+                <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">租期：{{list[0].htbdate | formatDate}}--{{list[0].edate | formatDate}}</div></flexboxItem>
                      
                 </flexbox>
                 <flexbox :gutter="0">
                    <flexboxItem><div class="fontSize14  marginTop10">起租日：{{list[0].bdate | formatDate}}</div></flexboxItem>
                      
-                </flexbox>
-                <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">租户:{{list[0].yhname}}</div></flexboxItem>
-                     
-                </flexbox>
-                <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">联系人：{{list[0].lxr ? list[0].lxr : '暂无'}}</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 text_right marginTop10">联系电话：{{list[0].mobile ? list[0].mobile : '暂无'}}</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
@@ -33,21 +32,34 @@
                 </flexbox>
                 <template v-for="money in list">
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10 text_center">{{money.wyno}}</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 marginTop10 text_center">{{money.sqzj ? money.sqzj : 0}}元/平方/月</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 marginTop10 text_center">{{money.sqglfy ? money.sqglfy : 0}}元/平方/月</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 marginTop10 text_center">{{money.mmje}}{{money.glmmje}}元/平方/月</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.wyno}}({{money.zymj}}㎡)</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.sqzj ? money.sqzj : 0}}元/平方/月</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.sqglfy ? money.sqglfy : 0}}元/平方/月</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.mmje}}
+                        {{money.glmmje}}元/平方/月</div></flexboxItem>
                 </flexbox>
                 </template>
                 <div class="hr"></div>
                 <flexbox :gutter="0">
-                    <flexboxItem :span="7"><div class="fontSize14 ">保证金：{{list.bzj ? list.bzj : 0}}元</div></flexboxItem>
-                    <flexboxItem><div class="fontSize14 marginTop10 text_right">水电押金：{{list.bzj_qt ? list.bzj_qt : 0}}元</div></flexboxItem>
+                    <flexboxItem :span="7"><div class="fontSize14 ">合同保证金：{{list.bzj ? list.bzj : 0}}元</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10 text_right">其他押金：{{list.bzj_qt ? list.bzj_qt : 0}}元</div></flexboxItem>
+                </flexbox>
+                <div class="hr"></div>
+                <flexbox :gutter="0">                    
+                    <flexboxItem><div class="fontSize14  text_center">其他周期项目</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14  text_center">周期</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14  text_center">金额</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">保洁费</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">一月</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">50元</div></flexboxItem>
+                </flexbox>
+                <div class="hr"></div>
+            <!--     <flexbox :gutter="0">
                     <flexboxItem :span="7"><div class="fontSize14 marginTop10">计租周期：{{list.jzzq ? lsit.jzzq : 0}}个月</div></flexboxItem>
                     <flexboxItem><div class="fontSize14 marginTop10 text_right">首期计租：{{list.sqnum ? list.sqnum : 0}}个月{{list.sqDays ? lis.sqnum : 0}}天</div></flexboxItem>
-                </flexbox>
+                </flexbox> -->
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize14 marginTop10">用途：{{list.wysy ? list.wysy : '未定'}}</div></flexboxItem>
                 </flexbox>
@@ -72,7 +84,7 @@
                                 <div v-else-if="htzt == '已生效'">
                                     <XButton  type="primary" @click.native="alertShow(list,'批准终止')">终止合同</XButton>
                                 </div>
-                                <div v-else="htzt == '已终止'">
+                                <div v-else>
                                     <XButton   type="primary" @click.native="alertShow(list,'反终止')">启用合同</XButton>
                                 </div>
                                 </div>
@@ -182,6 +194,18 @@ export default {
 }
 .fontSize14{
     font-size:14px;
+    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+    white-space:nowrap;
+text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+}
+.fontSize14{
+    font-size:14px;
+    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+    white-space:nowrap;
+text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+}
+.fontSize12{
+    font-size:10px;
     overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
     white-space:nowrap;
 text-overflow:ellipsis;/* IE 专有属性，当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/

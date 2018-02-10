@@ -15,7 +15,7 @@
           <div class="content" :key="array.bxdate" v-for="array in listAll">
             <nav :key="contact.bxno" v-for="contact in array">
                 <flexbox>
-                    <flexboxItem :span="7"><div class="marginTop10 fontSize14">报修单号：{{contact.bxno}}</div></flexboxItem>
+                    <flexboxItem :span="7"><div class="marginTop10 fontSize14"><b>报修单号：{{contact.bxno}}</b></div></flexboxItem>
                     <!-- {{contact.isyh ? <img src="../assets/contactName.png"> : <img src="../assets/house.png">}}</div> -->
                     <flexboxItem :span="3"><div class="  marginTop10 fontSize14" style="text-align:center">
                         <span v-if="contact.isyh">
@@ -26,10 +26,10 @@
                         </span>
                         </div>
                     </flexboxItem>
-                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" >{{contact.iscl ? '已处理' : '未处理'}}</div></flexboxItem>
+                    <flexboxItem ><div class="text_right color_red marginTop10 fontSize14" ><b>{{contact.iscl ? '已处理' : '未处理'}}</b></div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize14 marginTop10">业户:{{contact.wyname}}</div></flexboxItem>
+                    <flexboxItem><div class="fontSize14 marginTop10"><span v-if="contact.isyh">业户:</span><span v-else>报修人：</span>{{contact.wyname}}</div></flexboxItem>
                      <flexboxItem :span="3"><div class="fontSize14 text_right marginTop10">{{contact.wyno}}</div></flexboxItem>
                      <flexboxItem :span="2"><div class="fontSize14 text_right marginTop10"><img src="../assets/GPS.png" alt=""></div></flexboxItem>
                 </flexbox>

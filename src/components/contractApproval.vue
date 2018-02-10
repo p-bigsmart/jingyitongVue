@@ -11,8 +11,8 @@
                 </select>
                 </span>
         </x-header>
-        <div class="content" v-for="array in contactList">
-            <nav v-for="contact in array">
+        <div class="content" :key="array" v-for="array in contactList">
+            <nav v-for="contact in array" :key="contact">
                 <flexbox>
                     <flexboxItem :span="9"><div class="marginTop10"><b>合同号：{{contact.htno}}</b></div></flexboxItem>
                     <flexboxItem ><div class="text_right color_red marginTop10" ><b>{{contact.htzt}}</b></div></flexboxItem>
@@ -43,7 +43,7 @@
                                 <div v-else-if="contact.htzt == '已生效'">
                                     <XButton mini type="warn" @click.native="alertShow(contact,'批准终止')">终止合同</XButton>
                                 </div>
-                                <div v-else="contact.htzt == '已终止'">
+                                <div v-else>
                                     <XButton  mini type="warn" @click.native="alertShow(contact,'反终止')">启用合同</XButton>
                                 </div>
                                 <XButton v-text="btnText2" mini type="primary" link="./contractDetails" @click.native="details(contact.htno,contact.htzt)"></XButton>
