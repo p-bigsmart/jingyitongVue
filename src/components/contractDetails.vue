@@ -33,10 +33,27 @@
                 <template v-for="money in list">
                 <flexbox :gutter="0">
                     <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.wyno}}({{money.zymj}}㎡)</div></flexboxItem>
-                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.sqzj ? money.sqzj : 0}}元/平方/月</div></flexboxItem>
-                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.sqglfy ? money.sqglfy : 0}}元/平方/月</div></flexboxItem>
-                    <flexboxItem><div class="fontSize12 marginTop10 text_center">{{money.mmje}}
-                        {{money.glmmje}}元/平方/月</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">
+                        {{money.sqzj ? money.sqzj : 0}}
+                        <span v-if="money.zjdw == 0">元/平方/月</span>
+                        <span v-else-if="money.zjdw == 1">元/月</span>
+                        <span v-else-if="money.zjdw == 2">元/平方/月</span>
+                        <span v-else-if="money.zjdw == 3">元/日</span>
+                        <span v-else-if="money.zjdw == 4">元/平方/年</span>
+                        <span v-else-if="money.zjdw == 5">元/年</span>
+                        </div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">
+                        {{money.sqglfy ? money.sqglfy : 0}}
+                        
+                        <span v-if="money.gldw == 0">元/平方/月</span>
+                        <span v-else-if="money.gldw == 1">元/月</span>
+                        <span v-else-if="money.gldw == 2">元/平方/月</span>
+                        <span v-else-if="money.gldw == 3">元/日</span>
+                        <span v-else-if="money.gldw == 4">元/平方/年</span>
+                        <span v-else-if="money.gldw == 5">元/年</span>
+                        </div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">
+                        {{money.mmje ? money.mmje : 0 + money.glmmje ? money.glmmje : 0}} 元</div></flexboxItem>
                 </flexbox>
                 </template>
                 <div class="hr"></div>
@@ -51,9 +68,9 @@
                     <flexboxItem><div class="fontSize14  text_center">金额</div></flexboxItem>
                 </flexbox>
                 <flexbox :gutter="0">
-                    <flexboxItem><div class="fontSize12 marginTop10 text_center">保洁费</div></flexboxItem>
-                    <flexboxItem><div class="fontSize12 marginTop10 text_center">一月</div></flexboxItem>
-                    <flexboxItem><div class="fontSize12 marginTop10 text_center">50元</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">无</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">无</div></flexboxItem>
+                    <flexboxItem><div class="fontSize12 marginTop10 text_center">无</div></flexboxItem>
                 </flexbox>
                 <div class="hr"></div>
             <!--     <flexbox :gutter="0">

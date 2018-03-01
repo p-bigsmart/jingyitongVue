@@ -13,17 +13,17 @@
                             <p>请输入你的账号和密码</p>
                             <div class="login-input">
                                 <div>
-                                <input  type="text" v-model="name" placeholder="请输入用户名" />
+                                <input @focus="footerHidden" @blur="footerShow"  type="text" v-model="name" placeholder="请输入用户名" />
                                 </div>
                                 <div>
-                                    <input type="password" v-model="pass" placeholder="请输入密码" />
+                                    <input  @focus="footerHidden" @blur="footerShow" type="password" v-model="pass" placeholder="请输入密码" />
                                 </div>
                             </div>
                             <button class="submit" @click="submit()">登录</button>
                             <p style="margin-top:0;"><a href="">忘记密码</a> | <a @click="goStationed">进驻登记</a></p>
                         </div>
                     </div>
-                    <footer>
+                    <footer id="footer">
 			<p>&copy;版权所有 -精拓软件科技有限公司所有</p>
 		        </footer>
             </div>
@@ -98,6 +98,16 @@ export default {
     },
     goStationed(){
         this.$router.push('./stationed')
+    },
+    footerHidden(){
+        let footer = document.getElementById('footer')
+        console.log(footer)
+        footer.style.display = 'none'
+    },
+    footerShow(){
+        let footer = document.getElementById('footer')
+        console.log(footer)
+        footer.style.display = 'block'
     }
     }
 

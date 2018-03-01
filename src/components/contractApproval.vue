@@ -4,15 +4,15 @@
             <input type="text" placeholder="物业\租户\合同号" v-model="searchVal" class="searchVal" />
             <button class="searchBtn" @click="search">搜索</button>
             <span slot="right">
-                <select >
-                    <option value="0">全部</option>
+                <select @change="selectChange" ref="selectValue">
+                    <option value="2">全部</option>
                     <option value="1">已生效</option>
-                    <option value="2">待生效</option>
+                    <option value="0">待生效</option>
                 </select>
                 </span>
         </x-header>
-        <div class="content" :key="array" v-for="array in contactList">
-            <nav v-for="contact in array" :key="contact">
+        <div class="content" :key="array[0].htno" v-for="array in contactList">
+            <nav v-for="contact in array" :key="contact.htno">
                 <flexbox>
                     <flexboxItem :span="9"><div class="marginTop10"><b>合同号：{{contact.htno}}</b></div></flexboxItem>
                     <flexboxItem ><div class="text_right color_red marginTop10" ><b>{{contact.htzt}}</b></div></flexboxItem>
@@ -135,7 +135,9 @@ export default {
             // 合同装填
             htzt:'',
             // 合同审批意见
-            shview:''
+            shview:'',
+            selectValue:'',
+            searchVal:''
           }
     },
     components:{
@@ -172,7 +174,23 @@ export default {
     },
     methods:{
         search(){
-            console.log(1)
+            console.log(this.selectValue)
+            postData('httable/search',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            issh:this.selectValue ? this.selectValue : 2,
+            keyword:this.searchVal
+            }).then(res =>{
+                this.contactList = []
+                this.contactList.push(res.data)
+                console.log(this.contactList)
+                if(!this.contactList[0].length){
+                    this.contactList = []
+                    p_alert('无此记录','暂无此记录！')
+                }
+            }).catch(err =>{
+                console.log(err)
+            })
         },
         // 点击批准生效等btn
         alertShow(contact,btnName){
@@ -244,6 +262,9 @@ export default {
             localStorage.setItem('htno',htno)
             // 将合同状态写到localStorage
             localStorage.setItem('htzt',htzt)
+        },
+    selectChange(ele){
+            this.selectValue = ele.target.value
         }
     },
     created(){

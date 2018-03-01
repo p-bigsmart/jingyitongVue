@@ -169,13 +169,16 @@ export default{
         fileUp(e){
             let upImg = this.$refs.upImg.files[0]
             let param = new FormData()
+            /* 一次上传多张图片 */
+            /* this.upImg.forEach(item =>{
+                param.append('file',upImg)
+            }) */
             param.append('file', upImg)
             param.append('code',localStorage.getItem('jinzhuma'))
             param.append('fdno',localStorage.getItem('fdno'))
             param.append('tsno',localStorage.getItem('tsno'))
           axios.post('tsupfile/upload', param)
           .then(response=>{
-            //   http://120.76.203.34:8081/tsupfile/5e015048.png
             console.log(response.data, '图片上传成功');
             this.ImgHttp.push(baseURL+ '/tsupfile/' +response.data.image)
             

@@ -96,7 +96,7 @@ export default {
     //   切换名字
       qiehuanName:'',
     //   楼盘placeholder
-      loupanPlace:'请选择操作人员'
+      loupanPlace:'请选择要切换的楼盘'
     };
   },
   methods: {
@@ -113,7 +113,8 @@ export default {
             console.log(res.data.name)
             switch(res.data.result){
                 case 0:
-                    p_alert_error()
+                 p_alert('验证出错','账号或密码错误，请从新确认.')
+                    
                     break;
                 case 1:
                     this.qiehuanName = res.data.name
@@ -134,7 +135,7 @@ export default {
                 case 3:
                     p_alert('进驻码出错','请从新申请进驻.')
                 case 5:
-                    p_alert('登录出错','账号或密码错误，请从新确认.')
+                   p_alert_error()
             }
             console.log(res)
         })

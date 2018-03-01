@@ -8,24 +8,24 @@
                 
                 <header>
                     <flexbox>
-                    <flexbox-item :span="8">
+                    <flexbox-item >
                         <div class="flex-demo" style="text-align:center">
                             <h4>欢迎您使用精易通物管助手！</h4>
-                            <span>如您还没有进驻码请点右边的 申请进驻</span>
+                            <span>请输入进驻码然后点击申请进驻，如未有进驻码请直接点击申请进驻！</span>
                         </div>
                     </flexbox-item>
-                    <flexbox-item>
+                    <!-- <flexbox-item>
                         <div class="flex-demo">
                             <x-button type="warn" mini link="getStationed">申请进驻</x-button>
                         </div>
-                    </flexbox-item>
+                    </flexbox-item> -->
                 </flexbox>
                 </header>
 
                      <group >
-                        <x-input title='请输入进驻码' type="text" v-model="jinzhuma">
+                        <x-input title='请输入进驻码：' type="text" v-model="jinzhuma">
                             <img slot="left" class="weui-vcode-img" src="https://i.loli.net/2017/09/18/59bf7f32425d5.jpg">
-                            <x-button slot="right" type="primary" mini @click.native="chaxun()">查询</x-button>
+                            <x-button slot="right" type="primary" mini @click.native="chaxun()">申请进驻</x-button>
                         </x-input>
                     </group>
                     
@@ -71,13 +71,20 @@
                     </group>
                     </div>
             </div>
+             <div v-transfer-dom>
+      <confirm v-model="jinzhuShow"
+      title="暂无此进驻码"
+      @on-confirm="jinzhuTankuang">
+        <p style="text-align:center;">是否先提交进驻申请？</p>
+      </confirm>
+    </div>
         </view-box>
     </div>
 </template>
 
 <script>
 
-import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector, AlertModule } from 'vux'
+import {ViewBox, XHeader,Flexbox, FlexboxItem, XButton, XInput, Group, Cell, Selector, AlertModule , TransferDomDirective as TransferDom, Confirm} from 'vux'
 import {postData} from 'src/util/base'
 import {p_alert,p_alert_error} from 'src/util/alert'
 export default {
@@ -94,7 +101,8 @@ export default {
       postData,
       p_alert,
       p_alert_error,
-      AlertModule 
+      AlertModule,
+      Confirm
   },
   data(){
       return {
@@ -111,16 +119,17 @@ export default {
           user:"",
           pass:"",
           selectValue:"",
-          random:0
+          random:0,
+          jinzhuShow:false
       }
   },
   methods:{
-      goGetStationed(){
-         this.$router.push('./getStationed')
+      jinzhuTankuang(){
+          this.$router.push('./getStationed')
       },
       chaxun(){
           if(this.jinzhuma.length == 0){
-              p_alert('进驻码错误','请输入进驻码！')
+              this.jinzhuTankuang()
           }else{
               postData("/public/search",{
                   code:this.jinzhuma
@@ -134,7 +143,7 @@ export default {
                     console.log(this.list[0])
                     this.companyFlag = true;
                   }else{
-                      p_alert("进驻码错误！","并未查询到此进驻码，请申请进驻.")
+                      this.jinzhuShow = true
                   }
               }).catch(error => {
                   console.log(error)
@@ -150,18 +159,16 @@ export default {
           p_alert('请选择操作人员','操作人员不能为空');
           return false;
       }
-      if(check(this.user,this.pass,this.phoneNum)){
+      if(check(this.user,this.pass,this.phoneNum,false)){
                 var that = this
-          console.log(this.phoneNum)
-          if(this.phoneNum != ''){
-              if(this.code != null){
             postData('/public/register',{
                 workno : this.selectValue,
                 username : this.user,
                 md5psw : this.pass,
                 bandmobile : this.phoneNum,
                 random : this.random,
-                verifyCode : this.code
+                verifyCode : this.code,
+                code : this.jinzhuma
             }).then(res => {
                 if(res.data == 0){
                     p_alert_error()
@@ -201,17 +208,11 @@ export default {
             }).catch(error => {
                 p_alert_error()
             })
-            }else{
-                p_alert("验证码错误","请填写验证码.")
-            }
-          }else{
-              p_alert('请输入手机号','手机号不能为空')
-          }
       }
     },
     // 获取验证码
     getCode(){
-        if(check(this.user,this.pass,this.phoneNum)){
+        if(check(this.user,this.pass,this.phoneNum,true)){
             if(this.phoneNum != ''){
                 this.disabledCode = true
                 let wait = 60;
@@ -260,7 +261,7 @@ export default {
 }
 
 // 判断数据是否填写完整
- function check (user,pass,phoneNum){
+ function check (user,pass,phoneNum,flag){
         if(user == ""){
               p_alert("请输入登录账号","物业软件登录账号不能为空.")
               return false;
@@ -275,7 +276,7 @@ export default {
               p_alert("绑定手机错误","请输入正确的手机号.")
               return false;
               }
-          }else if(phoneNum == ''){
+          }else if(phoneNum == '' && flag){
               p_alert("请输入手机号","手机号不能为空.")
               return false
           }

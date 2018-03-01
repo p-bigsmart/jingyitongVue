@@ -4,7 +4,7 @@
      
    <view-box ref="viewBox">
 
-     <x-header >
+     <x-header :left-options="{showBack: false}">
        精易通物管助手
        <span slot="right" @click="quit()">注销登陆</span>
      </x-header> 
@@ -37,28 +37,34 @@
       <grid-item label='投诉' link="./complaints">
         <img slot="icon" src="../assets/tousu.png">
       </grid-item>
-      <grid-item label='车牌查询' link="./licensePlate">
-        <img slot="icon" src="../assets/chaxun.png">
-      </grid-item>
-      <grid-item label='安保设备' link="">
+      <grid-item label='安保巡更' link="">
         <img slot="icon" src="../assets/jiancha.png">
       </grid-item>
-      <grid-item label='清洁绿化'>
+      <grid-item label='设备巡检'>
         <img slot="icon" src="../assets/jifei.png">
+      </grid-item>
+      <grid-item label='保洁绿化'>
+        <img slot="icon" src="../assets/jiaofei.png">
+      </grid-item>
+      <grid-item label='车牌查询' link="./licensePlate">
+        <img slot="icon" src="../assets/chaxun.png">
       </grid-item>
       <grid-item label='扫码抄表' link="./scanCodeReading">
         <img slot="icon" src="../assets/saoma.png">
       </grid-item>
-      <grid-item label='欠费查询' link="./arrearsInquiries">
+      <grid-item label='缴费查询' link="./arrearsInquiries">
         <img slot="icon" src="../assets/qianfei.png">
-      </grid-item>
-      <grid-item label='现场缴费'>
-        <img slot="icon" src="../assets/jiaofei.png">
       </grid-item>
       </grid>
      <common-footer></common-footer>
      </div>
-    
+        <div v-transfer-dom>
+      <confirm v-model="tuichuShow"
+      title="退出提示"
+      @on-confirm="tuichu">
+        <p style="text-align:center;">确定退出账号吗？</p>
+      </confirm>
+    </div>
    </view-box>
  </div>
 </template>
@@ -76,13 +82,16 @@ import {
   Group,
   Cell,
   Grid,
-  GridItem
+  GridItem,
+  TransferDomDirective as TransferDom,
+  Confirm
 } from "vux";
 import commonFooter from "src/common/footer";
 import axios from "axios";
 import { postData, allData } from "src/util/base";
 import { p_alert, p_alert_error } from "src/util/alert";
 import Vue from 'vue'
+
 export default {
   components: {
     CellFormPreview,
@@ -97,6 +106,7 @@ export default {
     commonFooter,
     Search,
     XButton,
+    Confirm,
     axios,
     postData,
     allData,
@@ -139,7 +149,8 @@ export default {
       // 出租率
       aOccupancyRate: [],
       swiperDis:true,
-      nullDis:false
+      nullDis:false,
+      tuichuShow:false
     };
   },
   created() {
@@ -302,7 +313,11 @@ export default {
       document.getElementsByClassName("vux-slider")[0].style.marginTop = "10px";
     },
     quit(){
+      this.tuichuShow  = true
+    },
+    tuichu(){
       // 换了环境，也要修改这个地址
+      postData('http://120.76.203.34:8081/logout',{id : 1}).then(res =>{console.log(res)}).catch(err =>{console.log(err)})
       localStorage.removeItem('user')
       localStorage.removeItem('pass')
       this.$router.push('./login')

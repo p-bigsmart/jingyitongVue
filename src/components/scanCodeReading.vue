@@ -5,7 +5,7 @@
     <x-header>精易通物管助手--扫码抄表</x-header>
     <div class="content">
         
-        <div class="marginTop10" style="height:30px;overflow:hidden;">
+        <div class="marginTop10" style="height:30px;overflow:hidden;margin-right:10px;">
             <x-button mini style="float:right;" type="primary" link="./meterReadingList">抄表清单</x-button>
         </div>
         <group>
@@ -75,13 +75,13 @@
         </div>
         <div v-transfer-dom>
             <x-dialog v-model="showScrollBox" class="dialog-demo"  hide-on-blur>
-                <h3 class="dialog-title marginTop10">合同审批</h3>
+                <h3 class="dialog-title marginTop10">绑定抄表号</h3>
                 <div class="hr"></div>
                 <!-- 点击时候要获取到河东编号 然后赋值过来 -->
                 <div>查无此抄表号的业户，如果需要绑定此抄表号，
                     请在以下搜索对应业户后进行绑定。
                 </div>
-                <div class="marginTop10"><b>抄表号：<red>2017110201</red></b></div>
+                <div class="marginTop10"><b>抄表号：<red>{{erweimaTest}}</red></b></div>
                 <div class="alertCentent">
                     <group>
                         <x-input  placeholder="请输入房号搜索" v-model="fanghao">
@@ -90,12 +90,15 @@
                     </group>
                 </div>
                 <div v-show="searchCaobiaoShow">
-                    <div class="marginTop10">业户：李四</div>
-                    <div class="marginTop10">房号：三栋中梯302</div>
+                    <div class="marginTop10">业户：{{fanghaoValue.yhname}}</div>
+                    <div class="marginTop10">房号：{{fanghaoValue.wyname}}</div>
+                    <group>
+                        <selector title="" placeholder="请选择水电项目" :options="searchList" :value-map="['xmno','xmname']"  v-model="searchListValue"></selector>
+                    </group>
                 </div>
-                <div class="marginTop10">
-                    <x-button type="primary" @click.native="bangding">绑定</x-button>
-                </div>
+                   <group>
+                        <x-button type="primary" @click.native="bangding">绑定</x-button>
+                   </group>
             </x-dialog>
             </div>
         
@@ -111,6 +114,7 @@ import {XButton, XHeader, XInput, Group, Flexbox, FlexboxItem, Selector, XDialog
 import {postData} from 'src/util/base'
 import {p_alert,p_alert_error,p_alert_hide} from 'src/util/alert'
 import commonFooter from 'src/common/footer'
+import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
 
 export default {
     directives: {
@@ -140,7 +144,7 @@ export default {
           list: [{key: '2010年10月', value: '2010年10月'}, {key: '2010年11月', value: '2010年11月'}],
           chaobiaolist:[{key: '0501', value: '水表'}, {key: '0502', value: '电表'}, {key: '0503', value: '气表'}],
           chaobiaoValue:'',
-          erweimaTest:'水表001',
+          erweimaTest:'',
           listShow:false,
           searchValue:[],
         //   本期抄表
@@ -148,15 +152,18 @@ export default {
           fanghao:'',
           showScrollBox:false,
           searchCaobiaoShow:false,
-          fanghaoValue:''
+          fanghaoValue:'',
+          searchList:[{key: '0501', value: '水表'}, {key: '0502', value: '电表'}, {key: '0503', value: '气表'}],
+          searchListValue:''
       }
   },
   methods:{
     //   调用二维码插件
     scan(){
+        var that = this
         cordova.plugins.barcodeScanner.scan(
             function (result) {
-                var erweimaTest = result.text 
+                that.erweimaTest = result.text 
             },
             function (error) {
                 p_alert_error('网络错误',"请退出软件重进一次");
@@ -197,6 +204,7 @@ export default {
                 xmflno : this.chaobiaoValue,
                 opMonth : this.selectValue
             }).then(res =>{
+                console.log(res,'是否可以抄表')
                 if(res.data){
                     postData('/mrding/setMeterReading',{
                         code : localStorage.getItem('jinzhuma'),
@@ -244,10 +252,23 @@ export default {
                     that.searchValue = res.data
                     console.log(that.searchValue)
                 }else{
+                    
                     p_alert_hide('暂无数据','抄表号未绑定业户',()=>{this.showScrollBox = true})
                 }
             }).catch(error =>{
                 p_alert('网络故障',error)
+            })
+            postData('/mrding/searchForXm',{
+                code : localStorage.getItem('jinzhuma'),
+                fdno : localStorage.getItem('fdno'),
+                xmflno : this.chaobiaoValue
+            }).then(res =>{
+                console.log(res)
+                this.searchList = []
+                this.searchList = res.data.data.list
+
+            }).catch(err =>{
+                p_alert_error()
             })
         }
     },
@@ -260,14 +281,44 @@ export default {
                 aKey : this.fanghao
             }).then(res =>{
                 if(res.data){
+                    this.searchCaobiaoShow = true
                     this.fanghaoValue = res.data
                 }else{
                     this.showScrollBox = false
+                    this.searchCaobiaoShow = false
+                    this.fanghaoValue = ''
                     p_alert_hide('房号错误','请输入正确的房号',()=>{this.showScrollBox = true})
                 }
             }).catch(err =>{
                 p_alert_error()
             })
+        }
+    },
+    /* 绑定抄表号 */
+    bangding(){
+        console.log(this.searchListValue)
+        if(this.fanghaoValue){
+            postData('/mrding/bandingMeterName',{
+                code : localStorage.getItem('jinzhuma'),
+                fdno : localStorage.getItem('fdno'),
+                wyno : this.fanghaoValue.wyno,
+                xmno : this.chaobiaoValue,
+                meterName : this.erweimaTest
+            }).then(res =>{
+                console.log(res)
+                if(res.data.success == 0){
+                    this.showScrollBox = false
+                    p_alert('绑定成功','绑定成功！')
+                }else{
+                    this.showScrollBox = false
+                    p_alert('绑定失败',res.data.errinfo)
+                }
+            }).catch(err =>{
+                p_alert_error()
+            })
+        }else{
+                    this.showScrollBox = false
+            p_alert_hide('绑定失败','请先输入房号查询出相应数据.',()=>{this.showScrollBox = true})
         }
     }
   }

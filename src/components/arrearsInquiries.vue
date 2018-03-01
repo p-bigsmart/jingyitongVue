@@ -107,17 +107,21 @@ export default {
         if(!this.dateTime){
           p_alert('未填写完整','请选择截止时间')
           return false
-        }else if(!this.wuyeNum){
-          p_alert('未填写完整','请输入关键字')
-          return false
         }else{
           postData('/arrear/search',{
             code : localStorage.getItem('jinzhuma'),
             fdno : localStorage.getItem('fdno'),
-            closingData : this.dateTime,
+            closingDate : this.dateTime,
             keyword : this.wuyeNum
           }).then(res =>{
-            console.log(res)
+            console.log(res.data)
+              if(res.data.length){
+                this.allList = []
+                this.allList.push(res.data);
+                console.log(this.allList)
+              }else{
+                p_alert('暂无数据','请输入正确的关键字')
+              }
           }).catch(err =>{
             p_alert_error()
           })

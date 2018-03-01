@@ -4,10 +4,10 @@
             <input type="text" placeholder="单号\物业\业户" v-model="searchVal" class="searchVal" />
             <button class="searchBtn" @click="search">搜索</button>
             <span slot="right">
-                <select >
-                    <option value="0">全部</option>
+                <select @change="selectChange" ref="selectValue">
+                    <option value="2">全部</option>
                     <option value="1">已处理</option>
-                    <option value="2">未处理</option>
+                    <option value="0">未处理</option>
                 </select>
                 </span>
         </x-header>
@@ -119,13 +119,32 @@ export default {
     };
   },
   methods: {
-    search() {
-      console.log(1);
-    },
+    search(){
+            console.log(this.selectValue)
+            postData('/tstable/search',{
+            code:localStorage.getItem('jinzhuma'),
+            fdno:localStorage.getItem('fdno'),
+            iscl:this.selectValue ? this.selectValue : 2,
+            keyword:this.searchVal
+            }).then(res =>{
+                this.listAll = []
+                this.listAll.push(res.data)
+                if(!this.listAll.length){
+                this.listAll = []
+                    p_alert('无此记录','暂无此记录！')
+                }
+            }).catch(err =>{
+                console.log(err)
+            })
+        },
     /* 点击查看详情，将单号传入到前端数据库中 */
     xiangqing(tsno){
       localStorage.setItem('tsno',tsno)
-    }
+    },
+        selectChange(ele){
+            this.selectValue = ele.target.value
+            
+        }
   }
 };
 </script>

@@ -2,7 +2,7 @@ import axios from 'axios'
 import qs from 'qs';
 
 // 默认端口
- //axios.defaults.baseURL = 'http://192.168.1.105:8081'
+//axios.defaults.baseURL = 'http://192.168.1.105:8081'
 axios.defaults.baseURL = 'http://120.76.203.34:8081'
 
 export const baseURL = axios.defaults.baseURL
